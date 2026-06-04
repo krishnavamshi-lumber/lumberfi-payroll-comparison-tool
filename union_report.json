@@ -859,7 +859,7 @@
             }
         ]
     },
-        {
+    {
         "execute": false,
         "company_name": "Bryan Construction, Inc",
         "start_date": "2026-04-27",
@@ -917,7 +917,7 @@
             }
         ]
     },
-        {
+    {
         "execute": false,
         "company_name": "MIINC",
         "start_date": "2026-04-27",
@@ -945,7 +945,7 @@
             }
         ]
     },
-     {
+    {
         "execute": false,
         "company_name": "Wagner Roofing Company",
         "start_date": "2025-12-28",
@@ -973,7 +973,7 @@
             }
         ]
     },
-         {
+    {
         "execute": false,
         "company_name": "Wagner Roofing Company",
         "start_date": "2026-02-01",
@@ -1001,7 +1001,7 @@
             }
         ]
     },
-         {
+    {
         "execute": false,
         "company_name": "Wagner Roofing Company",
         "start_date": "2026-02-08",
@@ -1029,7 +1029,7 @@
             }
         ]
     },
-         {
+    {
         "execute": false,
         "company_name": "Wagner Roofing Company",
         "start_date": "2026-05-03",
@@ -1054,6 +1054,40 @@
             },
             {
                 "payroll_journal_report": true
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Precision Mechanical",
+        "pay_periods": [
+            {
+                "start_date": "2026-05-18",
+                "end_date": "2026-05-24"
+            },
+            {
+                "start_date": "2026-05-11",
+                "end_date": "2026-05-17"
+            },
+            {
+                "start_date": "2026-05-04",
+                "end_date": "2026-05-10 (Off-Cycle)"
+            },
+            {
+                "start_date": "2026-05-04",
+                "end_date": "2026-05-10"
+            },
+            {
+                "start_date": "2026-04-27",
+                "end_date": "2026-05-03"
+            }
+        ],
+        "reports": [
+            {
+                "union_report": true,
+                "report_name": [
+                    "Local 192"
+                ]
             }
         ]
     }

@@ -986,18 +986,97 @@ def download_garnishment_report(service, page, company_name: str, folder_id: str
             _failure_logger.log_failure(safe_text(f"Garnishment_Report_{end_date}.csv"), reason=str(exc)[:300])
 
 
-def download_union_reports(service, page, company_name: str, report_names: list[str], folder_id: str, start_date: str, end_date: str, custom_report: bool = False) -> None:
+def select_multiple_pay_periods_for_union(page, pay_periods: list[dict]) -> bool:
+    """Open the pay-period dropdown once and check all matching checkboxes."""
+
+    page.click("body", position={"x": 100, "y": 100})
+    page.wait_for_timeout(2000)
+    try:
+        pay_period_dropdown = page.locator('svg[data-testid="ExpandMoreIcon"]')
+        expect(pay_period_dropdown).to_be_visible(timeout=120000)
+        pay_period_dropdown.click()
+        page.wait_for_timeout(2000)
+
+        checked_count = 0
+        for period in pay_periods:
+            p_start = period.get("start_date", "")
+            p_end = period.get("end_date", "")
+            if not p_start or not p_end:
+                continue
+            start_dt = datetime.strptime(p_start, "%Y-%m-%d")
+            end_date_clean = p_end.split()[0]
+            end_dt = datetime.strptime(end_date_clean, "%Y-%m-%d")
+            formatted = f"{start_dt.strftime('%m/%d/%Y')} – {end_dt.strftime('%m/%d/%Y')}"
+            suffix = extract_pay_period_suffix(p_end)
+            search_text = f"{formatted} {suffix}".strip() if suffix else formatted
+
+            try:
+                if suffix:
+                    locator = page.locator(
+                        f'//ul[@data-testid="pay-period-dropdown"]'
+                        f' //li[contains(normalize-space(.), "{search_text}")]'
+                    )
+                else:
+                    locator = page.locator(
+                        f'//ul[@data-testid="pay-period-dropdown"]'
+                        f' //div[.//p[contains(normalize-space(), "Paid")]]'
+                        f' //li[contains(normalize-space(.), "{formatted}")'
+                        f' and not(contains(normalize-space(.), "(Off-Cycle)"))]'
+                    )
+
+                expect(locator.first).to_be_visible(timeout=30000)
+                target_li = locator.first
+
+                checkbox = target_li.locator('input[type="checkbox"]')
+                if checkbox.count() == 0:
+                    checkbox = target_li.locator(
+                        'xpath=ancestor::div[contains(@class,"MuiBox-root")][2]//input[@type="checkbox"]'
+                    )
+
+                if checkbox.count() > 0:
+                    expect(checkbox.first).to_be_attached(timeout=30000)
+                    checkbox.first.check(force=True)
+                else:
+                    target_li.click()
+
+                log(f"[OK] Checked pay period: {search_text}")
+                checked_count += 1
+            except Exception as exc:
+                log(f"[WARN] Could not select pay period '{search_text}': {exc}")
+
+        page.click("body", position={"x": 100, "y": 100})
+        page.wait_for_timeout(5000)
+        return checked_count > 0
+    except Exception as exc:
+        log(f"[WARN] Multi-period selection failed: {exc}")
+        return False
+
+
+def download_union_reports(service, page, company_name: str, report_names: list[str], folder_id: str, start_date: str, end_date: str, custom_report: bool = False, pay_periods: list[dict] | None = None) -> None:
     navigate_to_report(page, "/reports/payroll/union_report")
     page.wait_for_timeout(5000)
 
-    if not select_date_range_from_calendar(page, end_date):
+    use_multi_period = bool(pay_periods)
+    # Determine which end_date to use for the calendar month/year picker
+    calendar_end_date = pay_periods[0].get("end_date", "").split()[0] if use_multi_period else end_date
+    # Label used in filenames — most-recent period's end_date when multi-period
+    label_end_date = pay_periods[0].get("end_date", end_date) if use_multi_period else end_date
+
+    if not select_date_range_from_calendar(page, calendar_end_date):
         log("[WARN] Failed to select date range from calendar, attempting alternative method...")
 
-    if not select_pay_period_for_401k(page, start_date, end_date):
-        log("[INFO] Skipping union report section because pay period was not found.")
-        if _failure_logger:
-            _failure_logger.log_skip("Union Report")
-        return
+    if use_multi_period:
+        if not select_multiple_pay_periods_for_union(page, pay_periods):
+            log("[INFO] Skipping union report section because no pay periods were found.")
+            if _failure_logger:
+                _failure_logger.log_skip("Union Report")
+            return
+    else:
+        if not select_pay_period_for_401k(page, start_date, end_date):
+            log("[INFO] Skipping union report section because pay period was not found.")
+            if _failure_logger:
+                _failure_logger.log_skip("Union Report")
+            return
 
     union_dropdown = page.locator('div[data-testid="select-union-dropdown"]')
     expect(union_dropdown).to_be_visible(timeout=120000)
@@ -1031,27 +1110,27 @@ def download_union_reports(service, page, company_name: str, report_names: list[
             expect(pdf_option).to_be_visible(timeout=120000)
             with page.expect_download(timeout=60000) as pdf_dl:
                 pdf_option.click()
-            pdf_filename = safe_text(f"Union_Report_{report_name}_{end_date}.pdf")
+            pdf_filename = safe_text(f"Union_Report_{report_name}_{label_end_date}.pdf")
             save_and_upload_download(service, pdf_dl.value, DOWNLOAD_DIR / pdf_filename, folder_id, pdf_filename, "application/pdf")
             log(f"[OK] Union report PDF saved: {pdf_filename}")
         except Exception as exc:
             log(f"[WARN] Union PDF download failed for '{report_name}': {exc}")
             if _failure_logger:
-                _failure_logger.log_failure(safe_text(f"Union_Report_{report_name}_{end_date}.pdf"), project=report_name, reason=str(exc)[:300])
+                _failure_logger.log_failure(safe_text(f"Union_Report_{report_name}_{label_end_date}.pdf"), project=report_name, reason=str(exc)[:300])
 
         try:
             excel_option = page.locator('//li[contains(normalize-space(.), "Excel")]')
             expect(excel_option).to_be_visible(timeout=120000)
             with page.expect_download(timeout=60000) as excel_dl:
                 excel_option.click()
-            excel_filename = safe_text(f"Union_Report_{report_name}_{end_date}.xlsx")
+            excel_filename = safe_text(f"Union_Report_{report_name}_{label_end_date}.xlsx")
             save_and_upload_download(service, excel_dl.value, DOWNLOAD_DIR / excel_filename, folder_id, excel_filename, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             log(f"[OK] Union report Excel saved: {excel_filename}")
             page.click("body", position={"x": 100, "y": 100})
         except Exception as exc:
             log(f"[WARN] Union Excel download failed for '{report_name}': {exc}")
             if _failure_logger:
-                _failure_logger.log_failure(safe_text(f"Union_Report_{report_name}_{end_date}.xlsx"), project=report_name, reason=str(exc)[:300])
+                _failure_logger.log_failure(safe_text(f"Union_Report_{report_name}_{label_end_date}.xlsx"), project=report_name, reason=str(exc)[:300])
 
         # Download custom union reports if flag is set
         if custom_report:
@@ -1082,7 +1161,7 @@ def download_union_reports(service, page, company_name: str, report_names: list[
                         with page.expect_download(timeout=60000) as custom_dl:
                             custom_option.click()
                         
-                        custom_filename = safe_text(f"Union_Report_{report_name}_{custom_name}_{end_date}.xlsx")
+                        custom_filename = safe_text(f"Union_Report_{report_name}_{custom_name}_{label_end_date}.xlsx")
                         save_and_upload_download(service, custom_dl.value, DOWNLOAD_DIR / custom_filename, folder_id, custom_filename, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                         log(f"[OK] Union custom report '{custom_name}' saved: {custom_filename}")
                         # page.click("body", position={"x": 100, "y": 100})
@@ -1397,6 +1476,14 @@ def run_company_job(service, page, job: dict, root_folder_id: str) -> None:
     company_name = job.get("company_name", "")
     start_date = job.get("start_date")
     end_date = job.get("end_date")
+    pay_periods: list[dict] = job.get("pay_periods", [])
+
+    # Jobs that use pay_periods instead of top-level start_date/end_date are valid
+    # (currently union-report only).  Derive fallback dates for folder naming.
+    if pay_periods and (not start_date or not end_date):
+        start_date = start_date or pay_periods[-1].get("start_date", "")
+        end_date = end_date or pay_periods[0].get("end_date", "").split()[0]
+
     if not company_name or not start_date or not end_date:
         log(f"[ERROR] Invalid job configuration: {job}")
         return
@@ -1455,7 +1542,11 @@ def run_company_job(service, page, job: dict, root_folder_id: str) -> None:
         union_folder = get_or_create_folder(service, company_folder_id, "Union")
         period_folder_id = get_or_create_folder(service, union_folder, period_folder)
         log_drive_folder("Download folder", root_path + ["Union", period_folder], period_folder_id)
-        download_union_reports(service, page, company_name, union_names, period_folder_id, start_date, end_date, custom_report_flag)
+        download_union_reports(
+            service, page, company_name, union_names, period_folder_id,
+            start_date, end_date, custom_report_flag,
+            pay_periods=pay_periods if pay_periods else None,
+        )
 
     # Worker Compensation
     worker_item = get_report_item(job.get("reports", []), "worker_compensation_report")
