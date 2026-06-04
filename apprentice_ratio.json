@@ -1,0 +1,211 @@
+[
+    {
+        "execute": true,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-05-11",
+        "end_date": "2026-05-17",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                ]
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "prevailingwage_summary_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "apprentice_ratio_report": true
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-05-18",
+        "end_date": "2026-05-24",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                ]
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "prevailingwage_summary_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "apprentice_ratio_report": true
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-04-13",
+        "end_date": "2026-04-19",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                ]
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "prevailingwage_summary_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "apprentice_ratio_report": true
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-05-11",
+        "end_date": "2026-05-17",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                ]
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "prevailingwage_summary_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "apprentice_ratio_report": true
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Elevate Concrete Systems LLC",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                ]
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "prevailingwage_summary_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "apprentice_ratio_report": true
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Omni Fireproofing Systems LLC",
+        "start_date": "2026-04-20",
+        "end_date": "2026-04-26",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+                },
+            {
+                "prevailing_wage_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "prevailingwage_summary_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "apprentice_ratio_report": true
+            }
+        ]
+    }
+]

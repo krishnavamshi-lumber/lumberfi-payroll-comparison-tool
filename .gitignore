@@ -1,0 +1,21 @@
+# OAuth credentials — never commit these
+credentials/
+credentials.json
+token.json
+gdrive_credentials.json
+gdrive_token.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Downloaded files (transient)
+downloads/
+
+# Logs
+*.log
+failure_log_*.txt

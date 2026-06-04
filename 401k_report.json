@@ -1,0 +1,880 @@
+[
+    {
+        "execute": false,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-04-13",
+        "end_date": "2026-04-19",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "24-00630 Ohio University Campus Housing Phase 2 DR3",
+                    "25-00602 Westerville City Hall Complex"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "24-00630 Ohio University Campus Housing Phase 2 DR3",
+                    "25-00602 Westerville City Hall Complex",
+                    "25-00617 Ohio University HCOM-Translational Research Center"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-04-20",
+        "end_date": "2026-04-26",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": true
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-05-11",
+        "end_date": "2026-05-17",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": true
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-05-04",
+        "end_date": "2026-05-10",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": true
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-04-13",
+        "end_date": "2026-04-19",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "625140 Palm Desert",
+                    "624070 Excel Paving- Irvine"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": [
+                    "624070 Excel Paving- Irvine"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": true
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "JLM Installations, Inc",
+        "start_date": "2026-03-30",
+        "end_date": "2026-04-05",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "BeWell Irvine Bldg F (23070) ^Zd DAVIDW"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "JLM Installations, Inc",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "247 Breed Street Shul Project (2445.01) ^"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Lynco Electric Co.",
+        "start_date": "2026-04-29",
+        "end_date": "2026-05-05",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "1674 - DAC OEM Generator",
+                    "1684 - T or C Press Box"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "NS Giles Foundations",
+        "start_date": "2026-04-26",
+        "end_date": "2026-05-02",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": [
+                    "New HQ Building - Dept. IF&W",
+                    "UMaine Morse Arena"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": true
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Precision Fabricating & Cleaning Company",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "227546ULA RD-180",
+                    "M27077PMI PFC SUPPORT FOR 327077-BLH"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Precision Mechanical",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "327038BCI B-21 FTU AMU"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Sievert Electric Service & Sales Company",
+        "start_date": "2026-04-20",
+        "end_date": "2026-04-26",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "260013 Lincoln Way HS District Scoreboards and Shotclocks: BA-2030 Option - Softball -Baseball (L-176)",
+                    "250103 CTA 2025 - 2028 Jobs ( SP )"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Wagner Roofing Company",
+        "start_date": "2026-04-26",
+        "end_date": "2026-05-02",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                    "Laborers' Local No. 1184"
+                ]
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "PR00006503 Balfour-JAB Copper Roof & Fall",
+                    "PR00006507 Consigli-USNA MacDonough Hall"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Wagner Roofing Company",
+        "start_date": "2026-04-12",
+        "end_date": "2026-04-18",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": true
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Paramount Builders",
+        "start_date": "2026-05-03",
+        "end_date": "2026-05-09",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": true
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Pro 1 Electric, Inc.",
+        "start_date": "2026-05-04",
+        "end_date": "2026-05-10",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": true
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Yard 1",
+        "start_date": "2026-04-19",
+        "end_date": "2026-04-25",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": true
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Yard 1",
+        "start_date": "2026-04-26",
+        "end_date": "2026-05-02",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "401K_report": true
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Cleland Masonry Inc",
+        "start_date": "2026-05-06",
+        "end_date": "2026-05-12",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": true
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "K2 Construction",
+        "start_date": "2026-04-26",
+        "end_date": "2026-05-02",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": true
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Milestone Building Services",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": true
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Milestone Building Services",
+        "start_date": "2026-04-20",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": true
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "MIINC",
+        "start_date": "2026-05-04",
+        "end_date": "2026-05-10 (Regular)",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": true
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "MIINC",
+        "start_date": "2026-05-04",
+        "end_date": "2026-05-10",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "401K_report": true
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "MIINC",
+        "start_date": "2026-03-23",
+        "end_date": "2026-03-29",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": true
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Sievert Electric Service & Sales Company",
+        "start_date": "2026-05-04",
+        "end_date": "2026-05-10",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "401K_report": true
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Guyer Brothers Inc.",
+        "start_date": "2026-05-03",
+        "end_date": "2026-05-09",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": true
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": false,
+        "company_name": "Evans Contracting Group, LLC",
+        "start_date": "2025-08-24",
+        "end_date": "2025-08-30",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": true
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Bryan Construction, Inc",
+        "start_date": "2026-03-30",
+        "end_date": "2026-04-05",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "401K_report": true
+            }
+        ]
+    },
+        {
+        "execute": true,
+        "company_name": "Bryan Construction, Inc",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "401K_report": true
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "MIINC",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "401K_report": true
+            }
+        ]
+    }
+]
