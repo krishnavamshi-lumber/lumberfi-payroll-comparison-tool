@@ -497,7 +497,7 @@ def select_pay_period_for_payroll_register(page, start_date: str, end_date: str,
                         if view_more_button.count() > 0:
                             log(f"[DEBUG] Clicking View More button (attempt {attempt + 1})")
                             view_more_button.click()
-                            page.wait_for_timeout(4000)
+                            page.wait_for_timeout(10000)
                             view_more_clicked_count += 1
                         else:
                             log(f"[DEBUG] No View More button found after {view_more_clicked_count} clicks, cannot load more items for '{search_text}'")
@@ -549,7 +549,7 @@ def select_pay_period_for_payroll_register(page, start_date: str, end_date: str,
                 if view_more_button.count() > 0:
                     log(f"[DEBUG] Clicking View More button (attempt {attempt + 1})")
                     view_more_button.click()
-                    page.wait_for_timeout(4000)  # Increased wait time for DOM to update
+                    page.wait_for_timeout(10000)  # Increased wait time for DOM to update
                     view_more_clicked_count += 1
                 else:
                     log(f"[DEBUG] No more View More buttons found after {view_more_clicked_count} clicks")
@@ -639,7 +639,7 @@ def select_pay_period_for_summary_of_wages(page, start_date: str, end_date: str,
                 if view_more_button.count() > 0:
                     log(f"[DEBUG] Clicking View More button (attempt {attempt + 1})")
                     view_more_button.click()
-                    page.wait_for_timeout(4000)
+                    page.wait_for_timeout(10000)
                     view_more_clicked_count += 1
                 else:
                     log(f"[DEBUG] No more View More buttons found after {view_more_clicked_count} clicks")
@@ -961,6 +961,7 @@ def download_garnishment_report(service, page, company_name: str, folder_id: str
         log("[WARN] Failed to select date range from calendar for Garnishment, continuing...")
 
     page.wait_for_timeout(5000)
+    page.click("body", position={"x": 100, "y": 100})
     page.click("body", position={"x": 100, "y": 100})
     if not select_pay_period_for_summary_of_wages(page, start_date, end_date, item_index=pay_period_index):
         log("[INFO] Skipping garnishment report section because pay period was not found.")

@@ -19,3 +19,6 @@ downloads/
 # Logs
 *.log
 failure_log_*.txt
+
+# Temp files
+temp*.json
