@@ -76,6 +76,7 @@ class FailureLogger:
 
 
 _failure_logger: FailureLogger | None = None
+_local_only: bool = False
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -187,6 +188,23 @@ def select_prevailing_wage_project(page, project_name: str) -> bool:
         return False
 
 
+def _ensure_401k_columns(page) -> None:
+    edit_btn = page.locator("//button[contains(normalize-space(.), 'Edit Columns')]")
+    edit_btn.click()
+
+    warnings_item = page.locator("//li[contains(normalize-space(.), 'Warnings')]")
+    if not warnings_item.locator("input[type='checkbox']").is_checked():
+        warnings_item.click()
+
+    fica_items = page.locator("//li[contains(normalize-space(.), 'FICA Earnings')]")
+    for i in range(2):
+        item = fica_items.nth(i)
+        if not item.locator("input[type='checkbox']").is_checked():
+            item.click()
+
+    page.click("body", position={"x": 100, "y": 100})
+
+
 def ensure_download_button(page):
     button = page.locator('button[data-testid="reports-download-button"]')
     if button.count() > 0:
@@ -220,6 +238,12 @@ def save_and_upload_download(
                 _failure_logger.log_zero_byte(upload_name)
             return False
 
+        if _local_only:
+            dest = DOWNLOAD_DIR / upload_name
+            save_path.rename(dest)
+            log(f"[LOCAL] Saved: {dest}")
+            return True
+
         log(f"[DEBUG] File ready for upload: {upload_name} ({file_size:,} bytes)")
         upload_file(service, save_path, folder_id, upload_name, mimetype)
         return True
@@ -232,9 +256,8 @@ def save_and_upload_download(
         return False
 
     finally:
-        # Clean up after successful upload — comment this out if you want
-        # to keep local copies for inspection
-        save_path.unlink(missing_ok=True)
+        if not _local_only:
+            save_path.unlink(missing_ok=True)
 
 
 def download_pdf_report(service, page, folder_id: str, filename: str) -> bool:
@@ -1443,6 +1466,8 @@ def download_401k_report(service, page, company_name: str, folder_id: str, start
         if _failure_logger:
             _failure_logger.log_skip("401K Report")
         return
+    
+    _ensure_401k_columns(page)
 
     download_button = ensure_download_button(page)
     try:
@@ -1507,18 +1532,24 @@ def run_company_job(service, page, job: dict, root_folder_id: str) -> None:
 
     today = datetime.today().strftime("%Y-%m-%d")
     period_folder = safe_text(f"{start_date}_to_{end_date}_{today}")
-    company_folder_id = get_or_create_folder(service, root_folder_id, company_name)
-    root_path = ["Prod_reports", company_name]
-    log_drive_folder("Company folder", root_path, company_folder_id)
+    if not _local_only:
+        company_folder_id = get_or_create_folder(service, root_folder_id, company_name)
+        root_path = ["Prod_reports", company_name]
+        log_drive_folder("Company folder", root_path, company_folder_id)
+    else:
+        company_folder_id = ""
 
     # Prevailing Wage
     prevailing_item = get_report_item(job.get("reports", []), "prevailing_wage_report")
     if prevailing_item.get("prevailing_wage_report"):
         projects = prevailing_item.get("projects", [])
         if projects:
-            pw_folder = get_or_create_folder(service, company_folder_id, "Prevailing Wage")
-            period_folder_id = get_or_create_folder(service, pw_folder, period_folder)
-            log_drive_folder("Download folder", root_path + ["Prevailing Wage", period_folder], period_folder_id)
+            if not _local_only:
+                pw_folder = get_or_create_folder(service, company_folder_id, "Prevailing Wage")
+                period_folder_id = get_or_create_folder(service, pw_folder, period_folder)
+                log_drive_folder("Download folder", ["Prod_reports", company_name, "Prevailing Wage", period_folder], period_folder_id)
+            else:
+                period_folder_id = ""
             download_prevailing_wage_reports(service, page, company_name, projects, period_folder_id, start_date, end_date)
         else:
             log(f"[WARN] No prevailing wage projects configured for {company_name}")
@@ -1528,9 +1559,12 @@ def run_company_job(service, page, job: dict, root_folder_id: str) -> None:
     if prevailing_summary_item.get("prevailingwage_summary_report"):
         projects = prevailing_summary_item.get("projects", [])
         if projects:
-            pw_summary_folder = get_or_create_folder(service, company_folder_id, "Prevailing wage Summary")
-            period_folder_id = get_or_create_folder(service, pw_summary_folder, period_folder)
-            log_drive_folder("Download folder", root_path + ["Prevailing wage Summary", period_folder], period_folder_id)
+            if not _local_only:
+                pw_summary_folder = get_or_create_folder(service, company_folder_id, "Prevailing wage Summary")
+                period_folder_id = get_or_create_folder(service, pw_summary_folder, period_folder)
+                log_drive_folder("Download folder", ["Prod_reports", company_name, "Prevailing wage Summary", period_folder], period_folder_id)
+            else:
+                period_folder_id = ""
             download_prevailing_wage_summary_reports(service, page, company_name, projects, period_folder_id, start_date, end_date)
         else:
             log(f"[WARN] No prevailing wage summary projects configured for {company_name}")
@@ -1540,9 +1574,12 @@ def run_company_job(service, page, job: dict, root_folder_id: str) -> None:
     if union_item.get("union_report"):
         union_names = union_item.get("report_name", [])
         custom_report_flag = union_item.get("custom_report", False)
-        union_folder = get_or_create_folder(service, company_folder_id, "Union")
-        period_folder_id = get_or_create_folder(service, union_folder, period_folder)
-        log_drive_folder("Download folder", root_path + ["Union", period_folder], period_folder_id)
+        if not _local_only:
+            union_folder = get_or_create_folder(service, company_folder_id, "Union")
+            period_folder_id = get_or_create_folder(service, union_folder, period_folder)
+            log_drive_folder("Download folder", ["Prod_reports", company_name, "Union", period_folder], period_folder_id)
+        else:
+            period_folder_id = ""
         download_union_reports(
             service, page, company_name, union_names, period_folder_id,
             start_date, end_date, custom_report_flag,
@@ -1552,9 +1589,12 @@ def run_company_job(service, page, job: dict, root_folder_id: str) -> None:
     # Worker Compensation
     worker_item = get_report_item(job.get("reports", []), "worker_compensation_report")
     if worker_item.get("worker_compensation_report"):
-        wc_folder = get_or_create_folder(service, company_folder_id, "Worker Compensation")
-        period_folder_id = get_or_create_folder(service, wc_folder, period_folder)
-        log_drive_folder("Download folder", root_path + ["Worker Compensation", period_folder], period_folder_id)
+        if not _local_only:
+            wc_folder = get_or_create_folder(service, company_folder_id, "Worker Compensation")
+            period_folder_id = get_or_create_folder(service, wc_folder, period_folder)
+            log_drive_folder("Download folder", ["Prod_reports", company_name, "Worker Compensation", period_folder], period_folder_id)
+        else:
+            period_folder_id = ""
         download_worker_compensation_report(service, page, company_name, period_folder_id, start_date, end_date)
 
     # Payroll Register
@@ -1563,67 +1603,91 @@ def run_company_job(service, page, job: dict, root_folder_id: str) -> None:
         payroll_item = get_report_item(job.get("reports", []), "payroll_register")
     if payroll_item.get("payroll_register_report") or payroll_item.get("payroll_register"):
         pay_period_index = payroll_item.get("pay_period_index", 0)
-        pr_folder = get_or_create_folder(service, company_folder_id, "Payroll Register")
-        period_folder_id = get_or_create_folder(service, pr_folder, period_folder)
-        log_drive_folder("Download folder", root_path + ["Payroll Register", period_folder], period_folder_id)
+        if not _local_only:
+            pr_folder = get_or_create_folder(service, company_folder_id, "Payroll Register")
+            period_folder_id = get_or_create_folder(service, pr_folder, period_folder)
+            log_drive_folder("Download folder", ["Prod_reports", company_name, "Payroll Register", period_folder], period_folder_id)
+        else:
+            period_folder_id = ""
         download_payroll_register_report(service, page, company_name, period_folder_id, start_date, end_date, pay_period_index)
 
     # Job Costing
     job_costing_item = get_report_item(job.get("reports", []), "job_costing_report")
     if job_costing_item.get("job_costing_report"):
-        jc_folder = get_or_create_folder(service, company_folder_id, "Job Costing")
-        period_folder_id = get_or_create_folder(service, jc_folder, period_folder)
-        log_drive_folder("Download folder", root_path + ["Job Costing", period_folder], period_folder_id)
+        if not _local_only:
+            jc_folder = get_or_create_folder(service, company_folder_id, "Job Costing")
+            period_folder_id = get_or_create_folder(service, jc_folder, period_folder)
+            log_drive_folder("Download folder", ["Prod_reports", company_name, "Job Costing", period_folder], period_folder_id)
+        else:
+            period_folder_id = ""
         download_job_costing_report(service, page, company_name, period_folder_id, start_date, end_date)
 
     # 401K Report
     report_401k_item = get_report_item(job.get("reports", []), "401K_report")
     if report_401k_item.get("401K_report"):
-        k401_folder = get_or_create_folder(service, company_folder_id, "401K")
-        period_folder_id = get_or_create_folder(service, k401_folder, period_folder)
-        log_drive_folder("Download folder", root_path + ["401K", period_folder], period_folder_id)
+        if not _local_only:
+            k401_folder = get_or_create_folder(service, company_folder_id, "401K")
+            period_folder_id = get_or_create_folder(service, k401_folder, period_folder)
+            log_drive_folder("Download folder", ["Prod_reports", company_name, "401K", period_folder], period_folder_id)
+        else:
+            period_folder_id = ""
         download_401k_report(service, page, company_name, period_folder_id, start_date, end_date)
 
     # Payroll Journal
     payroll_journal_item = get_report_item(job.get("reports", []), "payroll_journal_report")
     if payroll_journal_item.get("payroll_journal_report"):
-        pj_folder = get_or_create_folder(service, company_folder_id, "Payroll Journal")
-        period_folder_id = get_or_create_folder(service, pj_folder, period_folder)
-        log_drive_folder("Download folder", root_path + ["Payroll Journal", period_folder], period_folder_id)
+        if not _local_only:
+            pj_folder = get_or_create_folder(service, company_folder_id, "Payroll Journal")
+            period_folder_id = get_or_create_folder(service, pj_folder, period_folder)
+            log_drive_folder("Download folder", ["Prod_reports", company_name, "Payroll Journal", period_folder], period_folder_id)
+        else:
+            period_folder_id = ""
         download_payroll_journal_report(service, page, company_name, period_folder_id, start_date, end_date)
 
     # Apprentice Ratio report
     apprentice_ratio_item = get_report_item(job.get("reports", []), "apprentice_ratio_report")
     if apprentice_ratio_item.get("apprentice_ratio_report"):
-        app_ratio_folder = get_or_create_folder(service, company_folder_id, "Apprentice Ratio")
-        period_folder_id = get_or_create_folder(service, app_ratio_folder, period_folder)
-        log_drive_folder("Download folder", root_path + ["Apprentice Ratio", period_folder], period_folder_id)
+        if not _local_only:
+            app_ratio_folder = get_or_create_folder(service, company_folder_id, "Apprentice Ratio")
+            period_folder_id = get_or_create_folder(service, app_ratio_folder, period_folder)
+            log_drive_folder("Download folder", ["Prod_reports", company_name, "Apprentice Ratio", period_folder], period_folder_id)
+        else:
+            period_folder_id = ""
         download_apprentice_ratio_reports(service, page, company_name, period_folder_id, start_date, end_date)
 
     # Summary of Wages
     summary_of_wages_item = get_report_item(job.get("reports", []), "summary_of_wages_report")
     if summary_of_wages_item.get("summary_of_wages_report"):
-        sow_folder = get_or_create_folder(service, company_folder_id, "Summary of Wages")
-        period_folder_id = get_or_create_folder(service, sow_folder, period_folder)
-        log_drive_folder("Download folder", root_path + ["Summary of Wages", period_folder], period_folder_id)
+        if not _local_only:
+            sow_folder = get_or_create_folder(service, company_folder_id, "Summary of Wages")
+            period_folder_id = get_or_create_folder(service, sow_folder, period_folder)
+            log_drive_folder("Download folder", ["Prod_reports", company_name, "Summary of Wages", period_folder], period_folder_id)
+        else:
+            period_folder_id = ""
         download_summary_of_wages_report(service, page, company_name, period_folder_id, start_date, end_date)
 
     # Child Support Remittance
     child_support_item = get_report_item(job.get("reports", []), "child_support_report")
     if child_support_item.get("child_support_report"):
         pay_period_index = child_support_item.get("pay_period_index", 0)
-        cs_folder = get_or_create_folder(service, company_folder_id, "Child Support Remittance")
-        period_folder_id = get_or_create_folder(service, cs_folder, period_folder)
-        log_drive_folder("Download folder", root_path + ["Child Support Remittance", period_folder], period_folder_id)
+        if not _local_only:
+            cs_folder = get_or_create_folder(service, company_folder_id, "Child Support Remittance")
+            period_folder_id = get_or_create_folder(service, cs_folder, period_folder)
+            log_drive_folder("Download folder", ["Prod_reports", company_name, "Child Support Remittance", period_folder], period_folder_id)
+        else:
+            period_folder_id = ""
         download_child_support_report(service, page, company_name, period_folder_id, start_date, end_date, pay_period_index)
 
     # Garnishment Report
     garnishment_item = get_report_item(job.get("reports", []), "garnishment_report")
     if garnishment_item.get("garnishment_report"):
         pay_period_index = garnishment_item.get("pay_period_index", 0)
-        g_folder = get_or_create_folder(service, company_folder_id, "Garnishment")
-        period_folder_id = get_or_create_folder(service, g_folder, period_folder)
-        log_drive_folder("Download folder", root_path + ["Garnishment", period_folder], period_folder_id)
+        if not _local_only:
+            g_folder = get_or_create_folder(service, company_folder_id, "Garnishment")
+            period_folder_id = get_or_create_folder(service, g_folder, period_folder)
+            log_drive_folder("Download folder", ["Prod_reports", company_name, "Garnishment", period_folder], period_folder_id)
+        else:
+            period_folder_id = ""
         download_garnishment_report(service, page, company_name, period_folder_id, start_date, end_date, pay_period_index)
 
     job_end_time = datetime.now()
@@ -1646,7 +1710,15 @@ def main() -> None:
         default="9222,9223,9224",
         help="Comma-separated CDP ports for each Chrome instance (default: 9222,9223,9224).",
     )
+    parser.add_argument(
+        "--local",
+        action="store_true",
+        help="Save downloaded reports to the local downloads/ folder instead of uploading to Google Drive.",
+    )
     args = parser.parse_args()
+
+    global _local_only
+    _local_only = args.local
 
     ports = [int(p.strip()) for p in args.ports.split(",")]
 
@@ -1662,9 +1734,13 @@ def main() -> None:
     _failure_logger = FailureLogger(failure_log_path)
     log(f"[INFO] Failure log: {failure_log_path}")
 
-    bootstrap_service = get_drive_service()
-    prod_reports_id = get_or_create_folder(bootstrap_service, "root", "Prod_reports")
-    log_drive_folder("Root reports folder", ["Prod_reports"], prod_reports_id)
+    if _local_only:
+        log(f"[INFO] Local mode enabled — reports will be saved to: {DOWNLOAD_DIR}")
+        prod_reports_id = ""
+    else:
+        bootstrap_service = get_drive_service()
+        prod_reports_id = get_or_create_folder(bootstrap_service, "root", "Prod_reports")
+        log_drive_folder("Root reports folder", ["Prod_reports"], prod_reports_id)
 
     config = load_config(Path(args.config))
     executable_jobs = [job for job in config if job.get("execute", False)]
@@ -1733,7 +1809,7 @@ def main() -> None:
                 try:
                     # Each worker gets its own Drive service — the underlying
                     # HTTP client is not guaranteed thread-safe when shared.
-                    service = get_drive_service()
+                    service = None if _local_only else get_drive_service()
                     run_company_job(service, page, job, prod_reports_id)
                 except Exception as exc:
                     log(f"[ERROR] [{company}] Job failed: {exc}")
