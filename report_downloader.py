@@ -205,6 +205,25 @@ def _ensure_401k_columns(page) -> None:
     page.click("body", position={"x": 100, "y": 100})
 
 
+def _ensure_worker_compensation_columns(page) -> None:
+    edit_btn = page.locator("//button[contains(normalize-space(.), 'Edit Columns')]")
+    edit_btn.click()
+
+    for xpath in [
+        "//li[contains(normalize-space(.), 'Assigned Risk Rate')]",
+        "//li[contains(normalize-space(.), 'Regular')]",
+        "//li[contains(normalize-space(.), 'Gross')]",
+        "//li[contains(normalize-space(.), 'Overtime')]",
+    ]:
+        items = page.locator(xpath)
+        for i in range(items.count()):
+            item = items.nth(i)
+            if not item.locator("input[type='checkbox']").is_checked():
+                item.click()
+
+    page.click("body", position={"x": 100, "y": 100})
+
+
 def ensure_download_button(page):
     button = page.locator('button[data-testid="reports-download-button"]')
     if button.count() > 0:
@@ -1281,6 +1300,8 @@ def download_worker_compensation_report(service, page, company_name: str, folder
         return
 
     # page.wait_for_timeout(30000)
+    _ensure_worker_compensation_columns(page)
+
     download_button = ensure_download_button(page)
     try:
         expect(download_button).to_be_visible(timeout=120000)
