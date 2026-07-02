@@ -635,9 +635,13 @@ def select_pay_period_for_summary_of_wages(page, start_date: str, end_date: str,
             target_li.click()
 
     try:
-        select_button = page.locator('//p[contains(normalize-space(.), "Select")]')
-        expect(select_button).to_be_visible(timeout=120000)
-        select_button.click()
+        select_button = page.locator(
+            '//p[contains(normalize-space(.), "Select") and not(contains(normalize-space(.), "Select All"))]'
+        )
+        dropdown_already_open = page.locator('//p[contains(normalize-space(.), "Select All")]').count() > 0
+        if not dropdown_already_open:
+            expect(select_button).to_be_visible(timeout=120000)
+            select_button.click()
         page.wait_for_timeout(3000)
 
         max_view_more_attempts = 15
