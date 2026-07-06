@@ -207,6 +207,7 @@ def _ensure_401k_columns(page) -> None:
 
 def _ensure_worker_compensation_columns(page) -> None:
     edit_btn = page.locator("//button[contains(normalize-space(.), 'Edit Columns')]")
+    edit_btn.wait_for(state="visible", timeout=120_000)
     edit_btn.click()
 
     for xpath in [
@@ -228,7 +229,16 @@ def ensure_download_button(page):
     button = page.locator('button[data-testid="reports-download-button"]')
     if button.count() > 0:
         return button
-    return page.get_by_role("button", name="Download Report")
+
+    button = page.get_by_role("button", name="Download Report")
+    if button.count() > 0:
+        return button
+
+    button = page.get_by_role("button", name="Export")
+    if button.count() > 0:
+        return button
+
+    raise RuntimeError("❌ No Download Report or Export button found.")
 
 
 def save_and_upload_download(
@@ -612,6 +622,8 @@ def select_pay_period_for_summary_of_wages(page, start_date: str, end_date: str,
     """
     page.click("body", position={"x": 100, "y": 100})
     page.click("body", position={"x": 100, "y": 100})
+    page.keyboard.press('Escape')
+    page.wait_for_timeout(10_000)
     pay_period_text = format_pay_period_for_summary_of_wages(start_date, end_date)
     log(f"[DEBUG] Looking for pay period with text: '{pay_period_text}' (item_index={item_index})")
     suffix = extract_pay_period_suffix(end_date)
@@ -1376,7 +1388,7 @@ def download_apprentice_ratio_reports(service, page, company_name: str, folder_i
 
         page.click("body", position={"x": 100, "y": 100})
 
-        download_button = page.locator('//button[contains(normalize-space(.), "Download")]')
+        download_button = page.locator('//button[contains(normalize-space(.), "Export")]')
         expect(download_button).to_be_visible(timeout=120000)
         page.wait_for_function("button => !button.disabled", arg=download_button.element_handle(), timeout=120000)
 
