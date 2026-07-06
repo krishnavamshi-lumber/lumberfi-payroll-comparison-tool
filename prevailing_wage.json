@@ -441,5 +441,75 @@
                 "job_costing_report": false
             }
         ]
+    },
+    {
+        "execute": true,
+        "company_name": "Pro 1 Electric, Inc.",
+        "start_date": "2026-04-06",
+        "end_date": "2026-04-12",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Garrett Ridge Tank"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Thomas Construction",
+        "start_date": "2026-05-28",
+        "end_date": "2026-06-03",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Campground #4 Shower House Replacement Bennett Spring"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Cleland Masonry Inc",
+        "start_date": "2026-05-20",
+        "end_date": "2026-05-26",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Joplin Elementary Schools - 25MO22AHLA"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Delta Painting & Wallcoverings",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "10837 NGIC Rivanna Station"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "WiredHQ",
+        "start_date": "2026-06-01",
+        "end_date": "2026-06-07",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "25209 Knob Noster High School Telecommunications and Security Cabling"
+                ]
+            }
+        ]
     }
 ]
