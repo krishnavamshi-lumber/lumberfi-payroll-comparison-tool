@@ -525,5 +525,89 @@
                 ]
             }
         ]
+    },
+    {
+        "execute": true,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-05-04",
+        "end_date": "2026-05-10",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "23-00616 Lancaster HS"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-04-20",
+        "end_date": "2026-04-26",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "23-00616 Lancaster HS"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Elevate Concrete Systems LLC",
+        "start_date": "2026-02-02",
+        "end_date": "2026-02-08",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "EL24-122 Paragon Ranch-Blue Ash,OH"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Elevate Concrete Systems LLC",
+        "start_date": "2026-01-26",
+        "end_date": "2026-02-01",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "EL24-122 Paragon Ranch-Blue Ash,OH"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Omni Fireproofing Systems LLC",
+        "start_date": "2026-04-06",
+        "end_date": "2026-04-12",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "OM-25098 CMH NEW TERMINAL FP"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Omni Fireproofing Systems LLC",
+        "start_date": "2026-03-30",
+        "end_date": "2026-04-05",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "OM-25098 CMH NEW TERMINAL FP"
+                ]
+            }
+        ]
     }
 ]

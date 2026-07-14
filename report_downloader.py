@@ -169,6 +169,8 @@ def select_prevailing_wage_project(page, project_name: str) -> bool:
     try:
         project_dropdown = page.locator('div[data-testid="reports-select-project-dropdown"]')
         expect(project_dropdown).to_be_visible(timeout=120000)
+        dropdown_arrow_icon = project_dropdown.locator('svg[data-testid="KeyboardArrowDownIcon"]')
+        expect(dropdown_arrow_icon).to_be_visible(timeout=240000)
         project_dropdown.click()
         page.wait_for_timeout(1000)
 
@@ -465,7 +467,7 @@ def select_prevailing_wage_week(page, start_date: str, end_date: str) -> bool:
                     if displayed_start > start_dt.date():
                         prev_button = page.locator('button[data-testid="reports-previous-week-button"]')
                         if prev_button.count() > 0:
-                            prev_button.click()
+                            prev_button.click(timeout=60_000)
                             log("[INFO] Navigating to previous week")
                     else:
                         next_button = page.locator('button[data-testid="reports-next-week-button"]')
@@ -1317,7 +1319,7 @@ def download_worker_compensation_report(service, page, company_name: str, folder
             _failure_logger.log_skip("Worker Compensation")
         return
 
-    # page.wait_for_timeout(30000)
+    page.wait_for_timeout(60000)
     _ensure_worker_compensation_columns(page)
 
     download_button = ensure_download_button(page)
@@ -1431,7 +1433,7 @@ def download_payroll_journal_report(service, page, company_name: str, folder_id:
             _failure_logger.log_skip("Payroll Journal")
         return
 
-    # page.wait_for_timeout(15000)
+    page.wait_for_timeout(60000)
 
     download_button = ensure_download_button(page)
     try:
