@@ -511,5 +511,19 @@
                 ]
             }
         ]
+    },
+    {
+        "execute": true,
+        "company_name": "Modern Glass Company",
+        "start_date": "2026-06-01",
+        "end_date": "2026-06-07",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "GinnoConstruction:SmeltervilleWWTPg"
+                ]
+            }
+        ]
     }
 ]

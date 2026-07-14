@@ -1160,6 +1160,8 @@ def download_union_reports(service, page, company_name: str, report_names: list[
         option.click()
         page.wait_for_timeout(5000)
 
+        page.wait_for_selector('div[data-testid="union-name-header"]', timeout=500000)
+
         download_button = ensure_download_button(page)
         expect(download_button).to_be_visible(timeout=120000)
         try:
