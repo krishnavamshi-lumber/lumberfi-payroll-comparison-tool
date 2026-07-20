@@ -521,35 +521,7 @@
             {
                 "prevailing_wage_report": true,
                 "projects": [
-                    "GinnoConstruction:SmeltervilleWWTPg"
-                ]
-            }
-        ]
-    },
-    {
-        "execute": true,
-        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
-        "start_date": "2026-05-04",
-        "end_date": "2026-05-10",
-        "reports": [
-            {
-                "prevailing_wage_report": true,
-                "projects": [
-                    "23-00616 Lancaster HS"
-                ]
-            }
-        ]
-    },
-    {
-        "execute": true,
-        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
-        "start_date": "2026-04-20",
-        "end_date": "2026-04-26",
-        "reports": [
-            {
-                "prevailing_wage_report": true,
-                "projects": [
-                    "23-00616 Lancaster HS"
+                    "GinnoConstruction:SmeltervilleWWTP"
                 ]
             }
         ]
