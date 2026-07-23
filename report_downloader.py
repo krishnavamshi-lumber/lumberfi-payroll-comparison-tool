@@ -243,6 +243,26 @@ def ensure_download_button(page):
     raise RuntimeError("❌ No Download Report or Export button found.")
 
 
+def expect_download_with_retries(page, click_download, timeout: int = 240000, retries: int = 3, label: str = "download"):
+    """Run `click_download()` inside page.expect_download(), retrying if the
+    download never fires within `timeout`.
+
+    Some reports (e.g. Apprentice Ratio PDF) can take a while to generate and
+    occasionally miss the download event on the first click. Re-clicking the
+    same trigger is usually enough to make it fire on a later attempt.
+    """
+    last_exc = None
+    for attempt in range(1, retries + 1):
+        try:
+            with page.expect_download(timeout=timeout) as dl:
+                click_download()
+            return dl.value
+        except Exception as exc:
+            last_exc = exc
+            log(f"[WARN] {label} download attempt {attempt}/{retries} timed out: {exc}")
+    raise last_exc
+
+
 def save_and_upload_download(
     service, download, local_path: Path, folder_id: str, upload_name: str, mimetype: str
 ) -> bool:
@@ -1405,13 +1425,18 @@ def download_apprentice_ratio_reports(service, page, company_name: str, folder_i
         save_and_upload_download(service, csv_dl.value, DOWNLOAD_DIR / filename, folder_id, filename, "text/csv")
         log(f"[OK] Apprentice Ratio report saved: {filename}")
 
-        with page.expect_download(timeout=60000) as pdf_dl:
+        def _click_pdf_option():
             download_button.click()
             pdf_option = page.locator('//li[contains(normalize-space(.), "PDF")]')
             pdf_option.click()
-        
+
+        pdf_download = expect_download_with_retries(
+            page, _click_pdf_option, timeout=240000, retries=3, label="Apprentice Ratio PDF"
+        )
+
         pdf_filename = safe_text(f"Apprentice_Ratio_{end_date}.pdf")
-        save_and_upload_download(service, pdf_dl.value, DOWNLOAD_DIR / pdf_filename, folder_id, pdf_filename, "application/pdf")
+        save_and_upload_download(service, pdf_download, DOWNLOAD_DIR / pdf_filename, folder_id, pdf_filename, "application/pdf")
+
         log(f"[OK] Apprentice Ratio PDF report saved: {pdf_filename}")
     except Exception as exc:
         log(f"[WARN] Apprentice Ratio download failed: {exc}")
