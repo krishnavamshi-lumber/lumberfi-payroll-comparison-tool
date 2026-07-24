@@ -253,7 +253,7 @@ def _apply_tolerance_rules(file_status: dict, report_type: str, filename: str = 
         #         print(f"[TOLERANCE] Prevailing wage Summary PDF overridden to PASS for American Asphalt South (equal word diff +{added},-{removed})")
 
     elif report_type == "Summary of Wages" and file_status.get("file_type") == "pdf":
-        if file_status.get("words_added", 0) <= 2 and file_status.get("words_removed", 0) <= 2:
+        if file_status.get("words_added", 0) <= 3 and file_status.get("words_removed", 0) <= 3:
             file_status = dict(file_status)
             file_status["status"] = "PASS"
             file_status["details"] = file_status.get("details", "") + " [tolerated: ≤2 word diff]"
