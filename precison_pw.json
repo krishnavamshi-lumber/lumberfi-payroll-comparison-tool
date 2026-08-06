@@ -1,0 +1,32 @@
+[
+    {
+        
+        "execute": true,
+        "company_name": "Precision Fabricating & Cleaning Company",
+        "start_date": "2026-06-01",
+        "end_date": "2026-06-07",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "227546ULA RD-180",
+                    "M27077PMI PFC SUPPORT FOR 327077-BLH"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Precision Mechanical",
+        "start_date": "2026-06-22",
+        "end_date": "2026-06-28",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "327038BCI B-21 FTU AMU"
+                ]
+            }
+        ]
+    }
+]
