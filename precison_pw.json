@@ -28,5 +28,65 @@
                 ]
             }
         ]
+    },
+    {
+        "execute": true,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "625140 Palm Desert",
+                    "624070 Excel Paving- Irvine"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Precision Mechanical",
+        "pay_periods": [
+            {
+                "start_date": "2026-05-18",
+                "end_date": "2026-05-24"
+            },
+            {
+                "start_date": "2026-05-11",
+                "end_date": "2026-05-17"
+            },
+            {
+                "start_date": "2026-05-04",
+                "end_date": "2026-05-10 (Off-Cycle)"
+            },
+            {
+                "start_date": "2026-05-04",
+                "end_date": "2026-05-10"
+            },
+            {
+                "start_date": "2026-04-27",
+                "end_date": "2026-05-03"
+            }
+        ],
+        "reports": [
+            {
+                "union_report": true,
+                "report_name": [
+                    "Local 192"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Milestone Building Services",
+        "start_date": "2026-04-20",
+        "end_date": "2026-05-03 (Regular)",
+        "reports": [
+            {
+                "payroll_register_report": true
+            }
+        ]
     }
 ]
