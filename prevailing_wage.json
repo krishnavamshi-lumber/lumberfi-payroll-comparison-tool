@@ -244,8 +244,8 @@
     {
         "execute": true,
         "company_name": "Precision Fabricating & Cleaning Company",
-        "start_date": "2026-04-27",
-        "end_date": "2026-05-03",
+        "start_date": "2026-06-01",
+        "end_date": "2026-06-07",
         "reports": [
             {
                 "union_report": false,
@@ -274,8 +274,8 @@
     {
         "execute": true,
         "company_name": "Precision Mechanical",
-        "start_date": "2026-04-27",
-        "end_date": "2026-05-03",
+        "start_date": "2026-06-22",
+        "end_date": "2026-06-28",
         "reports": [
             {
                 "union_report": false,
