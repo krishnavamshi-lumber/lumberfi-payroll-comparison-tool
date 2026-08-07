@@ -1060,28 +1060,8 @@
     {
         "execute": true,
         "company_name": "Precision Mechanical",
-        "pay_periods": [
-            {
-                "start_date": "2026-05-18",
-                "end_date": "2026-05-24"
-            },
-            {
-                "start_date": "2026-05-11",
-                "end_date": "2026-05-17"
-            },
-            {
-                "start_date": "2026-05-04",
-                "end_date": "2026-05-10 (Off-Cycle)"
-            },
-            {
-                "start_date": "2026-05-04",
-                "end_date": "2026-05-10"
-            },
-            {
-                "start_date": "2026-04-27",
-                "end_date": "2026-05-03"
-            }
-        ],
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-24",
         "reports": [
             {
                 "union_report": true,

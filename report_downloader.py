@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import json
 import os
@@ -732,9 +734,41 @@ def select_pay_period_for_summary_of_wages(page, start_date: str, end_date: str,
         return False
 
 
+PAYROLL_REGISTER_DATE_RANGE = "04/01/2026 – 09/30/2026"
+
+
+def select_payroll_register_date_range(page, formatted_range: str) -> bool:
+    """Set the broad date-range filter on the payroll register page and confirm with OK.
+
+    The pay-period dropdown only lists periods that fall within this range, so it
+    must be set before select_pay_period_for_payroll_register can find the target period.
+    """
+    try:
+        date_input = page.locator('input[placeholder="MM/DD/YYYY – MM/DD/YYYY"]')
+        expect(date_input).to_be_visible(timeout=120000)
+        date_input.dblclick()
+        page.keyboard.press("Control+A")
+        date_input.fill(formatted_range)
+        page.wait_for_timeout(2000)
+        expect(date_input).to_have_value(formatted_range, timeout=120000)
+        page.wait_for_timeout(10000)
+
+        ok_button = page.locator('//button[@type="button"][contains(normalize-space(.), "OK")]')
+        expect(ok_button).to_be_visible(timeout=120000)
+        ok_button.click()
+        page.wait_for_timeout(3000)
+        return True
+    except Exception as exc:
+        log(f"[WARN] Failed to select date range '{formatted_range}' for payroll register: {exc}")
+        return False
+
+
 def download_payroll_register_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str, pay_period_index: int = 0) -> None:
     navigate_to_report(page, "/reports/payroll/payroll_register")
     page.wait_for_timeout(5000)
+
+    if not select_payroll_register_date_range(page, PAYROLL_REGISTER_DATE_RANGE):
+        log("[WARN] Failed to select payroll register date range, continuing with pay period selection anyway...")
 
     if not select_pay_period_for_payroll_register(page, start_date, end_date, pay_period_index):
         log("[INFO] Skipping payroll register report section because pay period was not found.")
@@ -1133,6 +1167,96 @@ def select_multiple_pay_periods_for_union(page, pay_periods: list[dict]) -> bool
         return False
 
 
+def _click_calendar_range_day(page, target_dt) -> bool:
+    """Click a specific day inside an open MUI DateRangeCalendar (two month panels),
+    navigating the panels forward/backward with the month arrows until the target
+    month is visible.
+    """
+    target_label = target_dt.strftime("%B %Y")
+    day_text = str(target_dt.day)
+
+    for _ in range(36):
+        month_containers = page.locator('div.MuiDateRangeCalendar-monthContainer')
+        container_count = month_containers.count()
+        target_container = None
+        first_header_text = ""
+        for i in range(container_count):
+            header_text = (month_containers.nth(i).locator('span.MuiTypography-subtitle1').text_content() or "").strip()
+            if i == 0:
+                first_header_text = header_text
+            if header_text == target_label:
+                target_container = month_containers.nth(i)
+
+        if target_container is not None:
+            day_button = target_container.locator("button").filter(has_text=re.compile(rf"^{day_text}$"))
+            expect(day_button.first).to_be_visible(timeout=30000)
+            day_button.first.click()
+            return True
+
+        try:
+            current_dt = datetime.strptime(first_header_text, "%B %Y")
+        except ValueError:
+            return False
+
+        if current_dt < target_dt:
+            nav_button = page.locator('button[aria-label="Next month"]:not([disabled])').first
+        else:
+            nav_button = page.locator('button[aria-label="Previous month"]:not([disabled])').first
+
+        expect(nav_button).to_be_visible(timeout=30000)
+        nav_button.click()
+        page.wait_for_timeout(500)
+
+    return False
+
+
+def select_pay_period_via_view_type_calendar(page, start_date: str, end_date: str) -> bool:
+    """Select the union report pay period on companies whose UI replaced the pay-period
+    dropdown with a 'view type' selector (e.g. Precision Mechanical): switch the view to
+    'Pay Period', open the day-range calendar, click the start and end days, then Apply.
+    """
+    try:
+        start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+        end_dt = datetime.strptime(end_date.split()[0], "%Y-%m-%d")
+
+        view_type_dropdown = page.locator('div[data-testid="payroll-report-view-type"]')
+        expect(view_type_dropdown).to_be_visible(timeout=120000)
+        view_type_dropdown.click()
+
+        pay_period_option = page.locator('li[data-value="pay_period"]')
+        expect(pay_period_option).to_be_visible(timeout=120000)
+        pay_period_option.click()
+        page.wait_for_timeout(1000)
+
+        calendar_icon = page.locator('svg[data-testid="Project Calendar ViewIcon"]')
+        expect(calendar_icon).to_be_visible(timeout=120000)
+        calendar_icon.click()
+        page.wait_for_timeout(1000)
+
+        expect(page.locator('div.MuiDateRangeCalendar-root')).to_be_visible(timeout=120000)
+
+        if not _click_calendar_range_day(page, start_dt):
+            log(f"[WARN] Could not find start day {start_date} in the calendar")
+            return False
+        page.wait_for_timeout(500)
+
+        if not _click_calendar_range_day(page, end_dt):
+            log(f"[WARN] Could not find end day {end_date} in the calendar")
+            return False
+        page.wait_for_timeout(500)
+
+        apply_button = page.locator('//button[contains(., "Apply")]')
+        expect(apply_button).to_be_visible(timeout=120000)
+        apply_button.click()
+        page.wait_for_timeout(5000)
+
+        log(f"[OK] Pay period range selected via calendar: {start_date} - {end_date}")
+        return True
+    except Exception as exc:
+        log(f"[WARN] Failed to select pay period via view-type calendar for '{start_date} - {end_date}': {exc}")
+        return False
+
+
 def download_union_reports(service, page, company_name: str, report_names: list[str], folder_id: str, start_date: str, end_date: str, custom_report: bool = False, pay_periods: list[dict] | None = None) -> None:
     navigate_to_report(page, "/reports/payroll/union_report")
     page.wait_for_timeout(5000)
@@ -1143,21 +1267,28 @@ def download_union_reports(service, page, company_name: str, report_names: list[
     # Label used in filenames — most-recent period's end_date when multi-period
     label_end_date = pay_periods[0].get("end_date", end_date) if use_multi_period else end_date
 
-    if not select_date_range_from_calendar(page, calendar_end_date):
-        log("[WARN] Failed to select date range from calendar, attempting alternative method...")
-
-    if use_multi_period:
-        if not select_multiple_pay_periods_for_union(page, pay_periods):
-            log("[INFO] Skipping union report section because no pay periods were found.")
+    if company_name == "Precision Mechanical":
+        if not select_pay_period_via_view_type_calendar(page, start_date, end_date):
+            log("[INFO] Skipping union report section because pay period range could not be selected.")
             if _failure_logger:
                 _failure_logger.log_skip("Union Report")
             return
     else:
-        if not select_pay_period_for_401k(page, start_date, end_date):
-            log("[INFO] Skipping union report section because pay period was not found.")
-            if _failure_logger:
-                _failure_logger.log_skip("Union Report")
-            return
+        if not select_date_range_from_calendar(page, calendar_end_date):
+            log("[WARN] Failed to select date range from calendar, attempting alternative method...")
+
+        if use_multi_period:
+            if not select_multiple_pay_periods_for_union(page, pay_periods):
+                log("[INFO] Skipping union report section because no pay periods were found.")
+                if _failure_logger:
+                    _failure_logger.log_skip("Union Report")
+                return
+        else:
+            if not select_pay_period_for_401k(page, start_date, end_date):
+                log("[INFO] Skipping union report section because pay period was not found.")
+                if _failure_logger:
+                    _failure_logger.log_skip("Union Report")
+                return
 
     union_dropdown = page.locator('div[data-testid="select-union-dropdown"]')
     expect(union_dropdown).to_be_visible(timeout=120000)
