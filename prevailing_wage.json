@@ -360,7 +360,7 @@
             }
         ]
     },
-        {
+    {
         "execute": true,
         "company_name": "Elevate Concrete Systems LLC",
         "start_date": "2026-01-26",
@@ -521,7 +521,9 @@
             {
                 "prevailing_wage_report": true,
                 "projects": [
-                    "GinnoConstruction:SmeltervilleWWTP"
+                    "GinnoConstruction:SmeltervilleWWTP",
+                    "McKinstry*:DavenportSDPhase2",
+                    "WashingtonStateUniversity:MurrowGreenhouse"
                 ]
             }
         ]
@@ -578,6 +580,162 @@
                 "prevailing_wage_report": true,
                 "projects": [
                     "OM-25098 CMH NEW TERMINAL FP"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Yield Industries Inc",
+        "start_date": "2026-06-14",
+        "end_date": "2026-06-20",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "1323 Batterson Park - Farmington/Hartford"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Yield Industries Inc",
+        "start_date": "2026-06-21",
+        "end_date": "2026-06-27",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "2612 Hartford - South Meadow Toe Drain",
+                    "2615 Bristol - Page Park Improvements Phase ll"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Buffalo Framing & Truss",
+        "start_date": "2026-06-29",
+        "end_date": "2026-07-05",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Creek Bend"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Buffalo Framing & Truss",
+        "start_date": "2026-07-13",
+        "end_date": "2026-07-19",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Willow Creek"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Buffalo Framing & Truss",
+        "start_date": "2026-08-03",
+        "end_date": "2026-08-09",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Community First"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Midwest Construction Company",
+        "start_date": "2026-07-13",
+        "end_date": "2026-07-19",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "2405 - TO 26FA048"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Midwest Construction Company",
+        "start_date": "2026-07-20",
+        "end_date": "2026-07-26",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "2405 - TO 26FA048"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Midwest Construction Company",
+        "start_date": "2026-07-27",
+        "end_date": "2026-08-02",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "2405 - TO 26FA048"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "MW Construction",
+        "start_date": "2026-05-09",
+        "end_date": "2026-05-15",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "8411 Jackson St Johns Restroom"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "MW Construction",
+        "start_date": "2026-05-16",
+        "end_date": "2026-05-22",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "8411 Jackson St Johns Restroom"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "King General Contractors, Inc.",
+        "start_date": "2026-05-31",
+        "end_date": "2026-06-06",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "PR00000008 Greene Co CNZ 191",
+                    "PR00000013 Dossett Lane"
                 ]
             }
         ]
