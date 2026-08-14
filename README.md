@@ -24,6 +24,21 @@ Start-Process $chromePath -ArgumentList '--remote-debugging-port=9223 --user-dat
 Start-Process $chromePath -ArgumentList '--remote-debugging-port=9224 --user-data-dir="C:\temp\chrome-profile-3"'
 ```
 
+```bash
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  --remote-debugging-port=9222 \
+  --user-data-dir="/tmp/chrome-profile-1" &
+
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  --remote-debugging-port=9223 \
+  --user-data-dir="/tmp/chrome-profile-2" &
+
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  --remote-debugging-port=9224 \
+  --user-data-dir="/tmp/chrome-profile-3" &
+```
+
+
 > Add or remove `Start-Process` lines depending on how many parallel workers you want.
 
 ---

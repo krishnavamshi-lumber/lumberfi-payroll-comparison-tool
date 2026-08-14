@@ -213,36 +213,6 @@
     },
     {
         "execute": true,
-        "company_name": "NS Giles Foundations",
-        "start_date": "2026-04-26",
-        "end_date": "2026-05-02",
-        "reports": [
-            {
-                "union_report": false,
-                "report_name": [
-                    "Laborers' Local No. 1184"
-                ]
-            },
-            {
-                "prevailing_wage_report": true,
-                "projects": [
-                    "New HQ Building - Dept. IF&W",
-                    "UMaine Morse Arena"
-                ]
-            },
-            {
-                "payroll_register_report": false
-            },
-            {
-                "worker_compensation_report": false
-            },
-            {
-                "job_costing_report": false
-            }
-        ]
-    },
-    {
-        "execute": true,
         "company_name": "Precision Fabricating & Cleaning Company",
         "start_date": "2026-06-01",
         "end_date": "2026-06-07",
