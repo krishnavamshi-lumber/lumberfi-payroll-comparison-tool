@@ -194,6 +194,7 @@ def select_prevailing_wage_project(page, project_name: str) -> bool:
 
 def _ensure_401k_columns(page) -> None:
     edit_btn = page.locator("//button[contains(normalize-space(.), 'Edit Columns')]")
+    edit_btn.wait_for(state="visible",timeout=30_000)
     edit_btn.click()
 
     warnings_item = page.locator("//li[contains(normalize-space(.), 'Warnings')]")
@@ -983,6 +984,7 @@ def download_summary_of_wages_report(service, page, company_name: str, folder_id
             _failure_logger.log_skip("Summary of Wages")
         return
 
+    page.wait_for_timeout(120_000)
     # Download CSV report
     try:
         download_button = ensure_download_button(page)
