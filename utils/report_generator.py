@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import io
 import re
+from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
@@ -264,7 +265,46 @@ def generate_html_report(comparison_results: list[dict], timestamp: str = None) 
     failed_count = sum(1 for r in comparison_results if r.get("status") == "FAIL")
     missing_count = sum(1 for r in comparison_results if r.get("status") == "MISSING")
     error_count = sum(1 for r in comparison_results if r.get("status") == "ERROR")
-    
+
+    # Aggregate statistics at the individual report (truth file) level
+    total_truth_reports = 0
+    reports_passed = 0
+    reports_failed = 0
+    reports_missing = 0
+    reports_error = 0
+
+    report_type_totals = defaultdict(lambda: {"total": 0, "passed": 0, "failed": 0})
+
+    for result in comparison_results:
+        rtype = result.get("report_type", "N/A")
+        details = result.get("details", "")
+        if not isinstance(details, list):
+            continue
+        for detail in details:
+            if not isinstance(detail, dict):
+                continue
+            for file_status in detail.get("file_statuses", []):
+                total_truth_reports += 1
+                report_type_totals[rtype]["total"] += 1
+                fs = file_status.get("status")
+                if fs == "PASS":
+                    reports_passed += 1
+                    report_type_totals[rtype]["passed"] += 1
+                elif fs == "FAIL":
+                    reports_failed += 1
+                    report_type_totals[rtype]["failed"] += 1
+                elif fs == "MISSING":
+                    reports_missing += 1
+                elif fs == "ERROR":
+                    reports_error += 1
+
+            # Files that exist in truth or compare folder but have no
+            # counterpart to diff against also count as individual reports.
+            missing_compare = detail.get("missing_compare", [])
+            missing_truth = detail.get("missing_truth", [])
+            total_truth_reports += len(missing_compare) + len(missing_truth)
+            reports_missing += len(missing_compare) + len(missing_truth)
+
     # Build rows for the report table
     rows_html = ""
     for result in comparison_results:
@@ -344,6 +384,18 @@ def generate_html_report(comparison_results: list[dict], timestamp: str = None) 
         </tr>
         """
     
+    # Build per-report-type breakdown rows
+    report_type_rows_html = ""
+    for rtype, counts in sorted(report_type_totals.items(), key=lambda kv: -kv[1]["total"]):
+        report_type_rows_html += f"""
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">{rtype}</td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align:center;">{counts['total']}</td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align:center; color:#28a745;">{counts['passed']}</td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align:center; color:#dc3545;">{counts['failed']}</td>
+        </tr>
+        """
+
     # Build the HTML document
     html = f"""
     <!DOCTYPE html>
@@ -474,8 +526,43 @@ def generate_html_report(comparison_results: list[dict], timestamp: str = None) 
                     <h3>Errors</h3>
                     <div class="number">{error_count}</div>
                 </div>
+                <div class="summary-card">
+                    <h3>Total Truth Reports</h3>
+                    <div class="number">{total_truth_reports}</div>
+                </div>
+                <div class="summary-card passed">
+                    <h3>Reports Passed</h3>
+                    <div class="number">{reports_passed}</div>
+                </div>
+                <div class="summary-card failed">
+                    <h3>Reports Failed</h3>
+                    <div class="number">{reports_failed}</div>
+                </div>
+                <div class="summary-card missing">
+                    <h3>Reports Missing</h3>
+                    <div class="number">{reports_missing}</div>
+                </div>
+                <div class="summary-card error">
+                    <h3>Report Errors</h3>
+                    <div class="number">{reports_error}</div>
+                </div>
             </div>
-            
+
+            <h2 style="color:#333; margin-top:30px;">Truth Reports by Type</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Report Type</th>
+                        <th>Total Files</th>
+                        <th>Passed</th>
+                        <th>Failed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {report_type_rows_html}
+                </tbody>
+            </table>
+
             <table>
                 <thead>
                     <tr>
