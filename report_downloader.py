@@ -828,6 +828,17 @@ def download_prevailing_wage_reports(service, page, company_name: str, projects:
         page.wait_for_timeout(10000)
 
         try:
+            generate_report_btn = page.locator('button[data-testid="reports-generate-report-button"]')
+            expect(generate_report_btn).to_be_visible(timeout=30000)
+            generate_report_btn.click()
+            page.wait_for_selector(
+                'button[data-testid="reports-federal-tab"], button[data-testid="reports-state-tab"]',
+                timeout=30000,
+            )
+        except Exception as exc:
+            log(f"[WARN] Generate report button click or state/federal tab wait failed for project '{project}': {exc}")
+
+        try:
             federal_tab = page.locator('button[data-testid="reports-federal-tab"]')
             expect(federal_tab).to_be_visible(timeout=120000)
             federal_tab.click()
