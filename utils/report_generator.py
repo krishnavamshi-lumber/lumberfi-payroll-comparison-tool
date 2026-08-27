@@ -507,26 +507,6 @@ def generate_html_report(comparison_results: list[dict], timestamp: str = None) 
             
             <div class="summary">
                 <div class="summary-card">
-                    <h3>Total Comparisons</h3>
-                    <div class="number">{total_comparisons}</div>
-                </div>
-                <div class="summary-card passed">
-                    <h3>Passed</h3>
-                    <div class="number">{passed_count}</div>
-                </div>
-                <div class="summary-card failed">
-                    <h3>Failed</h3>
-                    <div class="number">{failed_count}</div>
-                </div>
-                <div class="summary-card missing">
-                    <h3>Missing Files</h3>
-                    <div class="number">{missing_count}</div>
-                </div>
-                <div class="summary-card error">
-                    <h3>Errors</h3>
-                    <div class="number">{error_count}</div>
-                </div>
-                <div class="summary-card">
                     <h3>Total Truth Reports</h3>
                     <div class="number">{total_truth_reports}</div>
                 </div>
@@ -545,6 +525,26 @@ def generate_html_report(comparison_results: list[dict], timestamp: str = None) 
                 <div class="summary-card error">
                     <h3>Report Errors</h3>
                     <div class="number">{reports_error}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Total Comparisons</h3>
+                    <div class="number">{total_comparisons}</div>
+                </div>
+                <div class="summary-card passed">
+                    <h3>Passed</h3>
+                    <div class="number">{passed_count}</div>
+                </div>
+                <div class="summary-card failed">
+                    <h3>Failed</h3>
+                    <div class="number">{failed_count}</div>
+                </div>
+                <div class="summary-card missing">
+                    <h3>Missing Files</h3>
+                    <div class="number">{missing_count}</div>
+                </div>
+                <div class="summary-card error">
+                    <h3>Errors</h3>
+                    <div class="number">{error_count}</div>
                 </div>
             </div>
 
