@@ -197,9 +197,9 @@ def _ensure_401k_columns(page) -> None:
     edit_btn.wait_for(state="visible",timeout=30_000)
     edit_btn.click()
 
-    warnings_item = page.locator("//li[contains(normalize-space(.), 'Warnings')]")
-    if not warnings_item.locator("input[type='checkbox']").is_checked():
-        warnings_item.click()
+    # warnings_item = page.locator("//li[contains(normalize-space(.), 'Warnings')]")
+    # if not warnings_item.locator("input[type='checkbox']").is_checked():
+    #     warnings_item.click()
 
     fica_items = page.locator("//li[contains(normalize-space(.), 'FICA Earnings')]")
     for i in range(2):
@@ -953,6 +953,18 @@ def download_prevailing_wage_summary_reports(service, page, company_name: str, p
             if _failure_logger:
                 _failure_logger.log_skip("Prevailing Wage Summary", project=project)
             continue
+        
+        try:
+            generate_report_btn = page.locator('button[data-testid="reports-generate-report-button"]')
+            expect(generate_report_btn).to_be_visible(timeout=30000)
+            generate_report_btn.click()
+            log("Generate report button clicked")
+            page.wait_for_selector(
+                'button[data-testid="reports-federal-tab"], button[data-testid="reports-state-tab"]',
+                timeout=30000,
+            )
+        except Exception as exc:
+            log(f"[WARN] Generate report button click or state/federal tab wait failed for project '{project}': {exc}")
         page.wait_for_timeout(120000)
 
         try:
