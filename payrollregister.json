@@ -659,5 +659,61 @@
                 "job_costing_report": false
             }
         ]
+    },
+        {
+        "execute": true,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-08-17",
+        "end_date": "2026-08-23 (Regular)",
+        "reports": [
+            {
+                "payroll_register_report": true
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-07-20",
+        "end_date": "2026-07-26 (Off Cycle)",
+        "reports": [
+            {
+                "payroll_register_report": true,
+                "payperiod_index": 1
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "MIINC",
+        "start_date": "2026-08-31",
+        "end_date": "2026-09-06 (Regular)",
+        "reports": [
+            {
+                "payroll_register_report": true
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Sievert Electric Service & Sales Company",
+        "start_date": "2026-08-31",
+        "end_date": "2026-09-06 (Regular)",
+        "reports": [
+            {
+                "payroll_register_report": true
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Milestone Building Services",
+        "start_date": "2026-08-24",
+        "end_date": "2026-09-06 (Regular)",
+        "reports": [
+            {
+                "payroll_register_report": true
+            }
+        ]
     }
 ]
