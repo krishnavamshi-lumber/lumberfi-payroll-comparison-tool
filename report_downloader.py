@@ -1292,7 +1292,7 @@ def download_union_reports(service, page, company_name: str, report_names: list[
     # Label used in filenames — most-recent period's end_date when multi-period
     label_end_date = pay_periods[0].get("end_date", end_date) if use_multi_period else end_date
 
-    if company_name == "Precision Mechanical":
+    if company_name in ("Precision Mechanical", "MIINC"):
         if not select_pay_period_via_view_type_calendar(page, start_date, end_date):
             log("[INFO] Skipping union report section because pay period range could not be selected.")
             if _failure_logger:
@@ -1483,13 +1483,18 @@ def select_date_range_from_calendar(page, end_date: str) -> bool:
 
 def download_worker_compensation_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str) -> None:
     navigate_to_report(page, "/reports/payroll/worker_compensation")
-    
-    # First, select the date range from the calendar picker
-    if not select_date_range_from_calendar(page, end_date):
-        log("[WARN] Failed to select date range from calendar, attempting alternative method...")
-    
-    page.wait_for_timeout(60000)
-    if not select_pay_period_without_paid_section(page, start_date, end_date):
+
+    if company_name == "MIINC":
+        period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date)
+    else:
+        # First, select the date range from the calendar picker
+        if not select_date_range_from_calendar(page, end_date):
+            log("[WARN] Failed to select date range from calendar, attempting alternative method...")
+
+        page.wait_for_timeout(60000)
+        period_selected = select_pay_period_without_paid_section(page, start_date, end_date)
+
+    if not period_selected:
         log("[INFO] Skipping worker compensation report section because pay period was not found.")
         if _failure_logger:
             _failure_logger.log_skip("Worker Compensation")
@@ -1680,10 +1685,14 @@ def download_401k_report(service, page, company_name: str, folder_id: str, start
     navigate_to_report(page, "/reports/payroll/401k_report")
     page.click("body", position={"x": 100, "y": 100})
 
-    if not select_date_range_from_calendar(page, end_date):
-        log("[WARN] Failed to select date range from calendar for 401K report, continuing...")
+    if company_name == "MIINC":
+        period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date)
+    else:
+        if not select_date_range_from_calendar(page, end_date):
+            log("[WARN] Failed to select date range from calendar for 401K report, continuing...")
+        period_selected = select_pay_period_for_401k(page, start_date, end_date)
 
-    if not select_pay_period_for_401k(page, start_date, end_date):
+    if not period_selected:
         log("[INFO] Skipping 401K report section because pay period was not found.")
         if _failure_logger:
             _failure_logger.log_skip("401K Report")
