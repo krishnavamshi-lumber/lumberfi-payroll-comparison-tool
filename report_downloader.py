@@ -194,7 +194,7 @@ def select_prevailing_wage_project(page, project_name: str) -> bool:
 
 def _ensure_401k_columns(page) -> None:
     edit_btn = page.locator("//button[contains(normalize-space(.), 'Edit Columns')]")
-    edit_btn.wait_for(state="visible",timeout=30_000)
+    edit_btn.wait_for(state="visible",timeout=120_000)
     edit_btn.click()
 
     # warnings_item = page.locator("//li[contains(normalize-space(.), 'Warnings')]")
