@@ -228,18 +228,6 @@ def compare_pdfs(
         doc_b.close()
 
 
-_WORKER_COMP_KEY_COLUMNS = [
-    "SSN",
-    "Date Worked",
-    "Project Code",
-    "Cost Code",
-    "Task Code",
-    "Regular Hours",
-    "Overtime Hours",
-    "Double Overtime Hours",
-]
-
-
 def compare_worker_comp_csvs(
     truth_csv_bytes: bytes,
     compare_csv_bytes: bytes,
@@ -249,9 +237,11 @@ def compare_worker_comp_csvs(
     """
     Compare two Worker Compensation CSV files using key-based row matching.
 
-    Rows are matched by (SSN, Date Worked, Project Code, Cost Code, Task Code,
-    Regular Hours, Overtime Hours, Double Overtime Hours) rather than position,
-    so inserted or reordered rows do not cascade false CHANGEs.
+    Rows are matched by every column in the file (an exact-match key) rather
+    than position, so inserted or reordered rows do not cascade false CHANGEs.
+    Because the key spans all columns, any row with a differing value won't
+    pair up with its counterpart — it surfaces as a REMOVED/ADDED pair rather
+    than a CHANGED row with the differing cell highlighted.
 
     Duplicate keys are paired first-to-first. Extra rows on either side are
     reported as ADDED or REMOVED.
@@ -281,7 +271,7 @@ def compare_worker_comp_csvs(
     df_a = df_a.reindex(columns=columns, fill_value="")
     df_b = df_b.reindex(columns=columns, fill_value="")
 
-    active_key_cols = [c for c in _WORKER_COMP_KEY_COLUMNS if c in columns]
+    active_key_cols = columns
 
     def _row_key(row: dict) -> str:
         return "|".join(str(row.get(col, "")).strip() for col in active_key_cols)

@@ -1,0 +1,74 @@
+[
+    {
+        "execute": true,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-08-03",
+        "end_date": "2026-08-09",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "624070 Excel Paving- Irvine"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-08-10",
+        "end_date": "2026-08-16",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "625140 Palm Desert"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Cleland Masonry Inc",
+        "start_date": "2026-08-12",
+        "end_date": "2026-08-18",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Seneca Sch VoAg - 6126003",
+                    "SPS Pershing Middle School"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Guyer Brothers Inc.",
+        "start_date": "2026-08-16",
+        "end_date": "2026-08-22",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "26040 Whiskey Run Vista Sewer & Waterline - S",
+                    "PR00000005 Shop"
+                ]
+            }
+        ]
+    },
+        {
+        "execute": true,
+        "company_name": "Renua Energy",
+        "start_date": "2026-08-09",
+        "end_date": "2026-08-15",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Sleepy Hollow Middle/High School - C&I PV"
+                ]
+            }
+        ]
+    }
+]

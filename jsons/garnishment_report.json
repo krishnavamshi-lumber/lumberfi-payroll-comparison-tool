@@ -1,0 +1,117 @@
+[
+    {
+        "execute": true,
+        "company_name": "MIINC",
+        "start_date": "2026-05-04",
+        "end_date": "2026-05-10",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [],
+                "custom_report": false
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "401K_report": false
+            },
+            {
+                "summary_of_wages_report": false
+            },
+            {
+                "child_support_report": false,
+                "pay_period_index": 1
+            },
+            {
+                "garnishment_report": true
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [],
+                "custom_report": false
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "401K_report": false
+            },
+            {
+                "summary_of_wages_report": false
+            },
+            {
+                "child_support_report": false
+            },
+            {
+                "garnishment_report": true
+            }
+        ]
+    },
+        {
+        "execute": true,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [],
+                "custom_report": false
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "401K_report": false
+            },
+            {
+                "summary_of_wages_report": false
+            },
+            {
+                "child_support_report": false
+            },
+            {
+                "garnishment_report": true
+            }
+        ]
+    }
+]

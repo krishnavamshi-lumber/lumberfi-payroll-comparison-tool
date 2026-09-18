@@ -1,0 +1,134 @@
+[
+    {
+        "execute": true,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-05-11",
+        "end_date": "2026-05-17",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                ]
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "prevailingwage_summary_report": true,
+                "projects": [
+                    "625140 Palm Desert"
+                ]
+            }
+        ]
+    },
+        {
+        "execute": true,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-03-02",
+        "end_date": "2026-03-08",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                ]
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "prevailingwage_summary_report": true,
+                "projects": [
+                    "625128 Onyx Paving- Whittier"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Bryan Construction, Inc",
+        "start_date": "2026-04-06",
+        "end_date": "2026-04-12",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                ]
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "prevailingwage_summary_report": true,
+                "projects": [
+                    "GBSD MHC FE Warren"
+                ]
+            }
+        ]
+    },
+        {
+        "execute": true,
+        "company_name": "NS Giles Foundations",
+        "start_date": "2026-05-10",
+        "end_date": "2026-05-16",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                ]
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": [
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "prevailingwage_summary_report": true,
+                "projects": [
+                    "New HQ Building - Dept. IF&W"
+                ]
+            }
+        ]
+    }
+]

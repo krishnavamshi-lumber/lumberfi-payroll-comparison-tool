@@ -1,0 +1,73 @@
+[
+    {
+        "execute": true,
+        "company_name": "MIINC",
+        "start_date": "2026-03-30",
+        "end_date": "2026-04-01 (Off-Cycle)",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [],
+                "custom_report": false
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "401K_report": false
+            },
+            {
+                "summary_of_wages_report": false
+            },
+            {
+                "child_support_report": true,
+                "pay_period_index": 1
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "MIINC",
+        "start_date": "2026-04-20",
+        "end_date": "2026-04-26",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [],
+                "custom_report": false
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "401K_report": false
+            },
+            {
+                "summary_of_wages_report": false
+            },
+            {
+                "child_support_report": true
+            }
+        ]
+    }
+]

@@ -1,0 +1,102 @@
+[
+    {
+        "execute": true,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": true,
+                "report_name": [
+                    "Laborers' Local No. 1184"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Lynco Electric Co.",
+        "start_date": "2026-04-29",
+        "end_date": "2026-05-05",
+        "reports": [
+            {
+                "union_report": true,
+                "report_name": [
+                    "IBEW Local Union 583"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Yard 1",
+        "start_date": "2026-04-26",
+        "end_date": "2026-05-02",
+        "reports": [
+            {
+                "union_report": true,
+                "report_name": [
+                    "Local 150 – MARBA BLDG"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Sievert Electric Service & Sales Company",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": true,
+                "report_name": [
+                    "IBEW Local 134 A",
+                    "IBEW Local 134 C"
+                ],
+                "custom_report": true
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "MIINC",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": true,
+                "report_name": [
+                    "Local 100"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Precision Mechanical",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-24",
+        "reports": [
+            {
+                "union_report": true,
+                "report_name": [
+                    "Local 192"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Fire Protection Professionals",
+        "start_date": "2026-08-02",
+        "end_date": "2026-08-08",
+        "reports": [
+            {
+                "union_report": true,
+                "report_name": [
+                    "Local 669"
+                ]
+            }
+        ]
+    }
+]

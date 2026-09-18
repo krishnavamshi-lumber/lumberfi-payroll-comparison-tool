@@ -1,0 +1,34 @@
+
+[{
+        "execute": true,
+        "company_name": "Sievert Electric Service & Sales Company",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": true,
+                "report_name": [
+                    "IBEW Local 134 A",
+                    "IBEW Local 134 M"
+                ],
+                "custom_report": true
+            },
+            {
+                "prevailing_wage_report": false,
+                "projects": []
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            },
+            {
+                "401K_report": false
+            }
+        ]
+    }
+]

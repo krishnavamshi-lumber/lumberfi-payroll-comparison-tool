@@ -1,0 +1,800 @@
+[
+    {
+        "execute": true,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-04-13",
+        "end_date": "2026-04-19",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                    "Local 1275",
+                    "Local 136 Zone 1"
+                ]
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "24-00630 Ohio University Campus Housing Phase 2 DR3",
+                    "25-00602 Westerville City Hall Complex"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                    "Local 1275",
+                    "Local 136 Zone 1"
+                ]
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "24-00630 Ohio University Campus Housing Phase 2 DR3",
+                    "25-00602 Westerville City Hall Complex",
+                    "25-00617 Ohio University HCOM-Translational Research Center",
+                    "AOH-260010 Franklin County PFM"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-04-13",
+        "end_date": "2026-04-19",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                    "Laborers' Local No. 1184"
+                ]
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "625140 Palm Desert",
+                    "624070 Excel Paving- Irvine"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                    "Laborers' Local No. 1184"
+                ]
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "625140 Palm Desert",
+                    "624070 Excel Paving- Irvine"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "JLM Installations, Inc",
+        "start_date": "2026-03-30",
+        "end_date": "2026-04-05",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                    "Laborers' Local No. 1184"
+                ]
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "BeWell Irvine Bldg F (23070) ^Zd DAVIDW"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "JLM Installations, Inc",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                    "Laborers' Local No. 1184"
+                ]
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "247 Breed Street Shul Project (2445.01) ^"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Lynco Electric Co.",
+        "start_date": "2026-04-29",
+        "end_date": "2026-05-05",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                    "Laborers' Local No. 1184"
+                ]
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "1674 - DAC OEM Generator",
+                    "1684 - T or C Press Box"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Precision Fabricating & Cleaning Company",
+        "start_date": "2026-06-01",
+        "end_date": "2026-06-07",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                    "Laborers' Local No. 1184"
+                ]
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "227546ULA RD-180",
+                    "M27077PMI PFC SUPPORT FOR 327077-BLH"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Precision Mechanical",
+        "start_date": "2026-06-22",
+        "end_date": "2026-06-28",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                    "Laborers' Local No. 1184"
+                ]
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "327038BCI B-21 FTU AMU"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Sievert Electric Service & Sales Company",
+        "start_date": "2026-04-20",
+        "end_date": "2026-04-26",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                    "Laborers' Local No. 1184"
+                ]
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "260013 Lincoln Way HS District Scoreboards and Shotclocks: BA-2030 Option - Softball -Baseball (L-176)",
+                    "250103 CTA 2025 - 2028 Jobs ( SP )"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Wagner Roofing Company",
+        "start_date": "2026-04-26",
+        "end_date": "2026-05-02",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": [
+                    "Laborers' Local No. 1184"
+                ]
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "PR00006503 Balfour-JAB Copper Roof & Fall",
+                    "PR00006507 Consigli-USNA MacDonough Hall"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Elevate Concrete Systems LLC",
+        "start_date": "2026-01-26",
+        "end_date": "2026-02-01",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "EL25-104 The Flats on Wolf Creek",
+                    "EL25-103 Jalen Lofts"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Omni Fireproofing Systems LLC",
+        "start_date": "2026-01-05",
+        "end_date": "2026-01-11",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "OM-24099 City of Loveland Fire Station 63"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Omni Fireproofing Systems LLC",
+        "start_date": "2026-03-02",
+        "end_date": "2026-03-08",
+        "reports": [
+            {
+                "union_report": false,
+                "report_name": []
+            },
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "OM-24112 GSA BRICKER USBC BACKFILL"
+                ]
+            },
+            {
+                "payroll_register_report": false
+            },
+            {
+                "worker_compensation_report": false
+            },
+            {
+                "job_costing_report": false
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Pro 1 Electric, Inc.",
+        "start_date": "2026-04-06",
+        "end_date": "2026-04-12",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Garrett Ridge Tank"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Thomas Construction",
+        "start_date": "2026-05-28",
+        "end_date": "2026-06-03",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Campground #4 Shower House Replacement Bennett Spring"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Cleland Masonry Inc",
+        "start_date": "2026-05-20",
+        "end_date": "2026-05-26",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Joplin Elementary Schools - 25MO22AHLA"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Delta Painting & Wallcoverings",
+        "start_date": "2026-04-27",
+        "end_date": "2026-05-03",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "10837 NGIC Rivanna Station"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "WiredHQ",
+        "start_date": "2026-06-01",
+        "end_date": "2026-06-07",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "25209 Knob Noster High School Telecommunications and Security Cabling"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Modern Glass Company",
+        "start_date": "2026-06-01",
+        "end_date": "2026-06-07",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "GinnoConstruction:SmeltervilleWWTP",
+                    "McKinstry*:DavenportSDPhase2",
+                    "WashingtonStateUniversity:MurrowGreenhouse"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Elevate Concrete Systems LLC",
+        "start_date": "2026-02-02",
+        "end_date": "2026-02-08",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "EL24-122 Paragon Ranch-Blue Ash,OH"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Elevate Concrete Systems LLC",
+        "start_date": "2026-01-26",
+        "end_date": "2026-02-01",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "EL24-122 Paragon Ranch-Blue Ash,OH"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Omni Fireproofing Systems LLC",
+        "start_date": "2026-04-06",
+        "end_date": "2026-04-12",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "OM-25098 CMH NEW TERMINAL FP"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Omni Fireproofing Systems LLC",
+        "start_date": "2026-03-30",
+        "end_date": "2026-04-05",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "OM-25098 CMH NEW TERMINAL FP"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Yield Industries Inc",
+        "start_date": "2026-06-14",
+        "end_date": "2026-06-20",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "1323 Batterson Park - Farmington/Hartford"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Yield Industries Inc",
+        "start_date": "2026-06-21",
+        "end_date": "2026-06-27",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "2612 Hartford - South Meadow Toe Drain",
+                    "2615 Bristol - Page Park Improvements Phase ll"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Buffalo Framing & Truss",
+        "start_date": "2026-06-29",
+        "end_date": "2026-07-05",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Creek Bend"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Buffalo Framing & Truss",
+        "start_date": "2026-07-13",
+        "end_date": "2026-07-19",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Willow Creek"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Buffalo Framing & Truss",
+        "start_date": "2026-08-03",
+        "end_date": "2026-08-09",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Community First"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Midwest Construction Company",
+        "start_date": "2026-07-13",
+        "end_date": "2026-07-19",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "2405 - TO 26FA048"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Midwest Construction Company",
+        "start_date": "2026-07-20",
+        "end_date": "2026-07-26",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "2405 - TO 26FA048"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Midwest Construction Company",
+        "start_date": "2026-07-27",
+        "end_date": "2026-08-02",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "2405 - TO 26FA048"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "MW Construction",
+        "start_date": "2026-05-09",
+        "end_date": "2026-05-15",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "8411 Jackson St Johns Restroom"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "MW Construction",
+        "start_date": "2026-05-16",
+        "end_date": "2026-05-22",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "8411 Jackson St Johns Restroom"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "King General Contractors, Inc.",
+        "start_date": "2026-05-31",
+        "end_date": "2026-06-06",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "PR00000008 Greene Co CNZ 191",
+                    "PR00000013 Dossett Lane"
+                ]
+            }
+        ]
+    },
+        {
+        "execute": true,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-08-03",
+        "end_date": "2026-08-09",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "624070 Excel Paving- Irvine"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "American Asphalt South",
+        "start_date": "2026-08-10",
+        "end_date": "2026-08-16",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "625140 Palm Desert"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Cleland Masonry Inc",
+        "start_date": "2026-08-12",
+        "end_date": "2026-08-18",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Seneca Sch VoAg - 6126003",
+                    "SPS Pershing Middle School"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Guyer Brothers Inc.",
+        "start_date": "2026-08-16",
+        "end_date": "2026-08-22",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "26040 Whiskey Run Vista Sewer & Waterline - S",
+                    "PR00000005 Shop"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Renua Energy",
+        "start_date": "2026-08-02",
+        "end_date": "2026-08-08",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "AGE 17- Dewitt final work",
+                    "DMNA/Latham - EVSE Comm"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Renua Energy",
+        "start_date": "2026-08-09",
+        "end_date": "2026-08-15",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Sleepy Hollow Middle/High School - C&I PV"
+                ]
+            }
+        ]
+    }
+]
