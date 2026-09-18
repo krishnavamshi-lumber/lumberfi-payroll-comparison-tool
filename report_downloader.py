@@ -779,7 +779,7 @@ def select_payroll_register_date_range(page, formatted_range: str) -> bool:
 
 
 def download_payroll_register_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str, pay_period_index: int = 0) -> None:
-    navigate_to_report(page, "/reports/payroll/payroll_register")
+    navigate_to_report(page, "reportsv2/payroll/payroll_register")
     page.wait_for_timeout(5000)
 
     if not select_payroll_register_date_range(page, PAYROLL_REGISTER_DATE_RANGE):
@@ -825,7 +825,7 @@ def download_payroll_register_report(service, page, company_name: str, folder_id
 
 
 def download_prevailing_wage_reports(service, page, company_name: str, projects: list[str], folder_id: str, start_date: str, end_date: str) -> None:
-    navigate_to_report(page, "/reports/payroll/prevailing_wage")
+    navigate_to_report(page, "/reportsv2/payroll/prevailing_wage")
     page.wait_for_timeout(5000)
 
     if not select_prevailing_wage_week(page, start_date, end_date):
@@ -953,7 +953,7 @@ def download_prevailing_wage_reports(service, page, company_name: str, projects:
 
 
 def download_prevailing_wage_summary_reports(service, page, company_name: str, projects: list[str], folder_id: str, start_date: str, end_date: str) -> None:
-    navigate_to_report(page, "/reports/payroll/prevailing_wage")
+    navigate_to_report(page, "/reportsv2/payroll/prevailing_wage")
     page.wait_for_timeout(5000)
 
     if not select_prevailing_wage_week(page, start_date, end_date):
@@ -1005,7 +1005,7 @@ def download_prevailing_wage_summary_reports(service, page, company_name: str, p
 
 
 def download_summary_of_wages_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str) -> None:
-    navigate_to_report(page, "/reports/payroll/census_report")
+    navigate_to_report(page, "/reportsv2/payroll/census_report")
     page.wait_for_timeout(5000)
 
     # Strip any suffix (e.g. "(Off-Cycle)") from end_date before passing to the calendar picker
@@ -1070,7 +1070,7 @@ def download_summary_of_wages_report(service, page, company_name: str, folder_id
 
 
 def download_child_support_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str, pay_period_index: int = 0) -> None:
-    navigate_to_report(page, "/reports/payroll/child_support_payments")
+    navigate_to_report(page, "/reportsv2/payroll/child_support_payments")
     page.wait_for_timeout(5000)
 
     # Strip any suffix (e.g. "(Off-Cycle)") from end_date before passing to the calendar picker
@@ -1105,7 +1105,7 @@ def download_child_support_report(service, page, company_name: str, folder_id: s
 
 
 def download_garnishment_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str, pay_period_index: int = 0) -> None:
-    navigate_to_report(page, "/reports/payroll/garnishment_report")
+    navigate_to_report(page, "/reportsv2/payroll/garnishment_report")
     page.wait_for_timeout(5000)
 
     # Strip any suffix (e.g. "(Off-Cycle)") from end_date before passing to the calendar picker
@@ -1297,7 +1297,7 @@ def select_pay_period_via_view_type_calendar(page, start_date: str, end_date: st
 
 
 def download_union_reports(service, page, company_name: str, report_names: list[str], folder_id: str, start_date: str, end_date: str, custom_report: bool = False, pay_periods: list[dict] | None = None) -> None:
-    navigate_to_report(page, "/reports/payroll/union_report")
+    navigate_to_report(page, "/reportsv2/payroll/union_report")
     page.wait_for_timeout(5000)
 
     use_multi_period = bool(pay_periods)
@@ -1496,7 +1496,7 @@ def select_date_range_from_calendar(page, end_date: str) -> bool:
 
 
 def download_worker_compensation_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str) -> None:
-    navigate_to_report(page, "/reports/payroll/worker_compensation")
+    navigate_to_report(page, "/reportsv2/payroll/worker_compensation")
 
     if uses_view_type_selector(company_name, "worker_compensation_report"):
         period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date)
@@ -1533,7 +1533,7 @@ def download_worker_compensation_report(service, page, company_name: str, folder
 
 
 def download_job_costing_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str) -> None:
-    navigate_to_report(page, "/reports/payroll/job_costing")
+    navigate_to_report(page, "/reportsv2/payroll/job_costing")
     page.wait_for_timeout(10000)
 
     start_dt = datetime.strptime(start_date, "%Y-%m-%d")
@@ -1568,7 +1568,7 @@ def download_job_costing_report(service, page, company_name: str, folder_id: str
             _failure_logger.log_failure(safe_text(f"Job_Costing_allprojects_{end_date}.csv"), reason=str(exc)[:300])
 
 def download_apprentice_ratio_reports(service, page, company_name: str, folder_id: str, start_date: str, end_date: str) -> None:
-    navigate_to_report(page, "/reports/payroll/apprentice_ratio")
+    navigate_to_report(page, "/reportsv2/payroll/apprentice_ratio")
     page.wait_for_timeout(10000)
 
     start_dt = datetime.strptime(start_date, "%Y-%m-%d")
@@ -1620,7 +1620,7 @@ def download_apprentice_ratio_reports(service, page, company_name: str, folder_i
 
 
 def download_payroll_journal_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str) -> None:
-    navigate_to_report(page, "/reports/payroll/payroll_journal_report")
+    navigate_to_report(page, "/reportsv2/payroll/payroll_journal_report")
     page.click("body", position={"x": 100, "y": 100})
 
     if not select_date_range_from_calendar(page, end_date):
@@ -1696,7 +1696,7 @@ def select_pay_period_for_401k(page, start_date: str, end_date: str) -> bool:
 
 
 def download_401k_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str) -> None:
-    navigate_to_report(page, "/reports/payroll/401k_report")
+    navigate_to_report(page, "/reportsv2/payroll/401k_report")
     page.click("body", position={"x": 100, "y": 100})
 
     if uses_view_type_selector(company_name, "401k_report"):
@@ -2042,7 +2042,7 @@ def main() -> None:
 
                 page = context.new_page()
 
-                reports_url = f"{app_base_url}/reports/payroll"
+                reports_url = f"{app_base_url}/reportsv2/payroll/401k_report"
                 log(f"[INFO] [{company}] Opening app in new tab: {reports_url}")
                 try:
                     page.goto(reports_url, wait_until="domcontentloaded", timeout=60000)
