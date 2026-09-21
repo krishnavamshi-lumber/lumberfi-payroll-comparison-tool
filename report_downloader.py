@@ -144,6 +144,36 @@ def get_base_url(page) -> str:
     return match.group(1)
 
 
+def resize_browser_window(page, width: int = 1500, height: int = 1080) -> None:
+    """Resize the real OS-level Chrome window behind `page` via CDP.
+
+    Pages opened on an existing Chrome instance through connect_over_cdp have
+    no emulated Playwright viewport, so page.set_viewport_size() has no
+    effect there — the page always renders at whatever size the actual
+    window is. Narrow windows cause the report UI to reflow/overlap (e.g.
+    floating icons covering the Generate Report button), so we widen the
+    real window itself via the CDP Browser domain instead of relying on the
+    OS-level maximize button.
+    """
+    try:
+        cdp_session = page.context.new_cdp_session(page)
+        window_info = cdp_session.send("Browser.getWindowForTarget")
+        window_id = window_info["windowId"]
+        # Chrome rejects explicit width/height while the window is maximized/
+        # minimized, so force it back to a normal window state first.
+        cdp_session.send("Browser.setWindowBounds", {
+            "windowId": window_id,
+            "bounds": {"windowState": "normal"},
+        })
+        cdp_session.send("Browser.setWindowBounds", {
+            "windowId": window_id,
+            "bounds": {"left": 0, "top": 0, "width": width, "height": height},
+        })
+        log(f"[OK] Browser window resized to {width}x{height}")
+    except Exception as exc:
+        log(f"[WARN] Could not resize browser window: {exc}")
+
+
 def select_company(page, company_name: str) -> bool:
     try:
         chevrons = page.locator('svg[data-testid="Chevron DownIcon"]')
@@ -199,7 +229,9 @@ def select_prevailing_wage_project(page, project_name: str) -> bool:
         project_option = page.locator(f'//li[contains(normalize-space(.), "{project_name}")]')
         expect(project_option).to_be_visible(timeout=120000)
         project_option.click()
-        page.wait_for_timeout(5000)
+        page.wait_for_timeout(2000)
+        page.click("body", position={"x": 100, "y": 100})
+        page.wait_for_timeout(3000)
         return True
     except Exception as exc:
         log(f"[ERROR] Failed to select project '{project_name}': {exc}")
@@ -363,7 +395,7 @@ def download_csv_report(service, page, folder_id: str, filename: str, menu_selec
         # element detached before the click landed.  Both paths now open the
         # dropdown explicitly, and the button click is inside expect_download so
         # the event is never missed.
-        selector = menu_selector or 'li[data-testid="reports-download-csv-option"]'
+        selector = '//li[contains(normalize-space(.), "LCPtracker")]'
 
         with page.expect_download(timeout=120000) as dl:
             download_btn.click()
@@ -419,7 +451,7 @@ def select_pay_period_without_paid_section(page, start_date: str, end_date: str)
 
     page.click("body", position={"x": 100, "y": 100})
     try:
-        pay_period_dropdown = page.locator('svg[data-testid="ExpandMoreIcon"]')
+        pay_period_dropdown = page.locator('svg[data-testid="ExpandMoreIcon"]').last
         expect(pay_period_dropdown).to_be_visible(timeout=120000)
         pay_period_dropdown.click()
         page.wait_for_timeout(2000)
@@ -475,9 +507,9 @@ def select_prevailing_wage_week(page, start_date: str, end_date: str) -> bool:
     target_period_display = f"{start_dt.strftime('%b %d')} - {end_dt.strftime('%b %d')}"
 
     try:
-        current_week_locator = page.locator('div[data-testid="reports-current-week"]')
-        if current_week_locator.count() == 0:
-            current_week_locator = page.locator('div:has-text("–")')
+        current_week_locator = page.locator('p[data-testid="reports-current-week"]')
+        # if current_week_locator.count() == 0:
+        #     current_week_locator = page.locator('div:has-text("–")')
 
         expect(current_week_locator).to_be_visible(timeout=120000)
 
@@ -487,27 +519,28 @@ def select_prevailing_wage_week(page, start_date: str, end_date: str) -> bool:
         for week_attempt in range(1, max_week_attempts + 1):
             current_week_text = current_week_locator.text_content() or ""
             log(f"[INFO] Week attempt {week_attempt}/{max_week_attempts}: {current_week_text}")
+            normalized_week_text = current_week_text.replace("–", "-").replace("—", "-")
 
-            if target_period_display in current_week_text:
+            if target_period_display in normalized_week_text:
                 week_found = True
                 log(f"[OK] Correct week found: {current_week_text}")
                 page.wait_for_timeout(2000)
                 return True
 
             try:
-                date_match = re.search(r"(\w{3} \d{1,2}) - (\w{3} \d{1,2})", current_week_text)
+                date_match = re.search(r"(\w{3} \d{1,2}) - (\w{3} \d{1,2})", normalized_week_text)
                 if date_match:
                     displayed_start_str = date_match.group(1) + f" {start_dt.year}"
                     displayed_end_str = date_match.group(2) + f" {end_dt.year}"
                     displayed_start = datetime.strptime(displayed_start_str, "%b %d %Y").date()
 
                     if displayed_start > start_dt.date():
-                        prev_button = page.locator('button[data-testid="reports-previous-week-button"]')
+                        prev_button = page.locator('[data-testid="reports-previous-week-button"]')
                         if prev_button.count() > 0:
                             prev_button.click(timeout=60_000)
                             log("[INFO] Navigating to previous week")
                     else:
-                        next_button = page.locator('button[data-testid="reports-next-week-button"]')
+                        next_button = page.locator('[data-testid="reports-next-week-button"]')
                         if next_button.count() > 0:
                             next_button.click()
                             log("[INFO] Navigating to next week")
@@ -779,7 +812,7 @@ def select_payroll_register_date_range(page, formatted_range: str) -> bool:
 
 
 def download_payroll_register_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str, pay_period_index: int = 0) -> None:
-    navigate_to_report(page, "reportsv2/payroll/payroll_register")
+    navigate_to_report(page, "/reportsv2/payroll/payroll_register")
     page.wait_for_timeout(5000)
 
     if not select_payroll_register_date_range(page, PAYROLL_REGISTER_DATE_RANGE):
@@ -790,6 +823,8 @@ def download_payroll_register_report(service, page, company_name: str, folder_id
         if _failure_logger:
             _failure_logger.log_skip("Payroll Register")
         return
+    
+    page.wait_for_timeout(40_000)
 
     download_button = ensure_download_button(page)
     expect(download_button).to_be_visible(timeout=120000)
@@ -844,7 +879,11 @@ def download_prevailing_wage_reports(service, page, company_name: str, projects:
         try:
             generate_report_btn = page.locator('button[data-testid="reports-generate-report-button"]')
             expect(generate_report_btn).to_be_visible(timeout=30000)
-            generate_report_btn.click()
+            try:
+                generate_report_btn.click(timeout=15000)
+            except Exception:
+                log("[INFO] Generate report button click intercepted, retrying with force click...")
+                generate_report_btn.click(force=True)
             page.wait_for_selector(
                 'button[data-testid="reports-federal-tab"], button[data-testid="reports-state-tab"]',
                 timeout=30000,
@@ -971,7 +1010,11 @@ def download_prevailing_wage_summary_reports(service, page, company_name: str, p
         try:
             generate_report_btn = page.locator('button[data-testid="reports-generate-report-button"]')
             expect(generate_report_btn).to_be_visible(timeout=30000)
-            generate_report_btn.click()
+            try:
+                generate_report_btn.click(timeout=15000)
+            except Exception:
+                log("[INFO] Generate report button click intercepted, retrying with force click...")
+                generate_report_btn.click(force=True)
             log("Generate report button clicked")
             page.wait_for_selector(
                 'button[data-testid="reports-federal-tab"], button[data-testid="reports-state-tab"]',
@@ -1090,8 +1133,12 @@ def download_child_support_report(service, page, company_name: str, folder_id: s
         download_button = ensure_download_button(page)
         expect(download_button).to_be_visible(timeout=120000)
         page.wait_for_function("button => !button.disabled", arg=download_button.element_handle(), timeout=120000)
+        download_button.click()
+
+        excel_option = page.locator('//li[contains(normalize-space(.), "Excel")]')
+        expect(excel_option).to_be_visible(timeout=120000)
         with page.expect_download(timeout=60000) as csv_dl:
-            download_button.click()
+            excel_option.click()
 
         csv_filename = safe_text(f"Child_Support_Remittance_{end_date}.csv")
         save_and_upload_download(service, csv_dl.value, DOWNLOAD_DIR / csv_filename, folder_id, csv_filename, "text/csv")
@@ -1126,8 +1173,12 @@ def download_garnishment_report(service, page, company_name: str, folder_id: str
         download_button = ensure_download_button(page)
         expect(download_button).to_be_visible(timeout=120000)
         page.wait_for_function("button => !button.disabled", arg=download_button.element_handle(), timeout=120000)
+        download_button.click()
+
+        excel_option = page.locator('//li[contains(normalize-space(.), "Excel")]')
+        expect(excel_option).to_be_visible(timeout=120000)
         with page.expect_download(timeout=60000) as dl:
-            download_button.click()
+            excel_option.click()
 
         filename = safe_text(f"Garnishment_Report_{end_date}.csv")
         save_and_upload_download(service, dl.value, DOWNLOAD_DIR / filename, folder_id, filename, "text/csv")
@@ -1371,7 +1422,11 @@ def download_union_reports(service, page, company_name: str, report_names: list[
             if _failure_logger:
                 _failure_logger.log_failure(safe_text(f"Union_Report_{report_name}_{label_end_date}.pdf"), project=report_name, reason=str(exc)[:300])
 
+        download_button = ensure_download_button(page)
+        expect(download_button).to_be_visible(timeout=120000)
         try:
+            page.wait_for_function("button => !button.disabled", arg=download_button.element_handle(), timeout=120000)
+            download_button.click()
             excel_option = page.locator('//li[contains(normalize-space(.), "Excel")]')
             expect(excel_option).to_be_visible(timeout=120000)
             with page.expect_download(timeout=60000) as excel_dl:
@@ -1521,8 +1576,12 @@ def download_worker_compensation_report(service, page, company_name: str, folder
     try:
         expect(download_button).to_be_visible(timeout=120000)
         page.wait_for_function("button => !button.disabled", arg=download_button.element_handle(), timeout=120000)
+        download_button.click()
+
+        excel_option = page.locator('//li[contains(normalize-space(.), "Excel")]')
+        expect(excel_option).to_be_visible(timeout=120000)
         with page.expect_download(timeout=60000) as csv_dl:
-            download_button.click()
+            excel_option.click()
         filename = safe_text(f"Worker_Compensation_{end_date}.csv")
         save_and_upload_download(service, csv_dl.value, DOWNLOAD_DIR / filename, folder_id, filename, "text/csv")
         log(f"[OK] Worker Compensation report saved: {filename}")
@@ -1639,9 +1698,13 @@ def download_payroll_journal_report(service, page, company_name: str, folder_id:
     try:
         expect(download_button).to_be_visible(timeout=120000)
         page.wait_for_function("button => !button.disabled", arg=download_button.element_handle(), timeout=120000)
+        download_button.click()
+
+        excel_option = page.locator('//li[contains(normalize-space(.), "Excel")]')
+        expect(excel_option).to_be_visible(timeout=120000)
         filename = safe_text(f"Payroll_Journal_{end_date}.csv")
         with page.expect_download(timeout=60000) as csv_dl:
-            download_button.click()
+            excel_option.click()
         save_and_upload_download(service, csv_dl.value, DOWNLOAD_DIR / filename, folder_id, filename, "text/csv")
         log(f"[OK] Payroll Journal report saved: {filename}")
     except Exception as exc:
@@ -1658,7 +1721,7 @@ def select_pay_period_for_401k(page, start_date: str, end_date: str) -> bool:
     page.click("body", position={"x": 100, "y": 100})
     page.wait_for_timeout(2000)
     try:
-        pay_period_dropdown = page.locator('svg[data-testid="ExpandMoreIcon"]')
+        pay_period_dropdown = page.locator('svg[data-testid="ExpandMoreIcon"]').last
         expect(pay_period_dropdown).to_be_visible(timeout=120000)
         pay_period_dropdown.click()
         page.wait_for_timeout(2000)
@@ -1718,11 +1781,16 @@ def download_401k_report(service, page, company_name: str, folder_id: str, start
     try:
         expect(download_button).to_be_visible(timeout=120000)
         page.wait_for_function("button => !button.disabled", arg=download_button.element_handle(), timeout=120000)
+        download_button.click()
+
+        excel_option = page.locator('//li[contains(normalize-space(.), "Excel")]')
+        expect(excel_option).to_be_visible(timeout=120000)
         filename = safe_text(f"401K_Report_{end_date}.csv")
         with page.expect_download(timeout=60000) as csv_dl:
-            download_button.click()
+            excel_option.click()
         save_and_upload_download(service, csv_dl.value, DOWNLOAD_DIR / filename, folder_id, filename, "text/csv")
         log(f"[OK] 401K report saved: {filename}")
+        page.click("body", position={"x": 100, "y": 100})
     except Exception as exc:
         log(f"[WARN] 401K report download failed: {exc}")
         if _failure_logger:
@@ -2041,14 +2109,21 @@ def main() -> None:
                         break
 
                 page = context.new_page()
+                resize_browser_window(page)
 
                 reports_url = f"{app_base_url}/reportsv2/payroll/401k_report"
                 log(f"[INFO] [{company}] Opening app in new tab: {reports_url}")
+                page.pause()
                 try:
                     page.goto(reports_url, wait_until="domcontentloaded", timeout=60000)
-                    page.wait_for_load_state("networkidle", timeout=15000)
+                    page.wait_for_load_state("networkidle", timeout=20000)
+                    page.wait_for_timeout(10000)  # extra grace period for JS to fully render
+                    page.click("body", position={"x": 100, "y": 100})
+                    page.keyboard.press("Escape")
                 except Exception:
-                    pass  # networkidle timeout is non-fatal; DOM content is enough
+                    page.wait_for_timeout(10000)  # extra grace period for JS to fully render
+                    page.click("body", position={"x": 100, "y": 100})
+                    page.keyboard.press("Escape")
                 page.wait_for_timeout(10000)  # extra grace period for JS to fully render
 
                 try:
