@@ -2113,7 +2113,6 @@ def main() -> None:
 
                 reports_url = f"{app_base_url}/reportsv2/payroll/401k_report"
                 log(f"[INFO] [{company}] Opening app in new tab: {reports_url}")
-                page.pause()
                 try:
                     page.goto(reports_url, wait_until="domcontentloaded", timeout=60000)
                     page.wait_for_load_state("networkidle", timeout=20000)
