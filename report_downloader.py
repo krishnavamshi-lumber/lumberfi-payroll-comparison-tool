@@ -395,7 +395,7 @@ def download_csv_report(service, page, folder_id: str, filename: str, menu_selec
         # element detached before the click landed.  Both paths now open the
         # dropdown explicitly, and the button click is inside expect_download so
         # the event is never missed.
-        selector = '//li[contains(normalize-space(.), "LCPtracker")]'
+        selector = '//li[contains(normalize-space(.), "LCPtracker") or contains(normalize-space(.), "CSV")]'
 
         with page.expect_download(timeout=120000) as dl:
             download_btn.click()
