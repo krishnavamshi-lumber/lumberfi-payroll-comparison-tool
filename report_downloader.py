@@ -513,7 +513,7 @@ def select_prevailing_wage_week(page, start_date: str, end_date: str) -> bool:
 
         expect(current_week_locator).to_be_visible(timeout=120000)
 
-        max_week_attempts = 50
+        max_week_attempts = 250
         week_found = False
 
         for week_attempt in range(1, max_week_attempts + 1):
