@@ -2,64 +2,32 @@
     {
         "execute": true,
         "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
-        "start_date": "2026-04-13",
-        "end_date": "2026-04-19",
+        "start_date": "2026-09-14",
+        "end_date": "2026-09-20",
         "reports": [
-            {
-                "union_report": false,
-                "report_name": [
-                    "Local 1275",
-                    "Local 136 Zone 1"
-                ]
-            },
             {
                 "prevailing_wage_report": true,
                 "projects": [
-                    "24-00630 Ohio University Campus Housing Phase 2 DR3",
-                    "25-00602 Westerville City Hall Complex"
+                    "AOH-260010 Franklin County PFM",
+                    "AOH-260005 Chillicothe ACG Funded GMP 2"
                 ]
-            },
-            {
-                "payroll_register_report": false
-            },
-            {
-                "worker_compensation_report": false
-            },
-            {
-                "job_costing_report": false
             }
         ]
     },
     {
         "execute": true,
         "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
-        "start_date": "2026-04-27",
-        "end_date": "2026-05-03",
+        "start_date": "2026-08-31",
+        "end_date": "2026-09-06",
         "reports": [
-            {
-                "union_report": false,
-                "report_name": [
-                    "Local 1275",
-                    "Local 136 Zone 1"
-                ]
-            },
             {
                 "prevailing_wage_report": true,
                 "projects": [
                     "24-00630 Ohio University Campus Housing Phase 2 DR3",
-                    "25-00602 Westerville City Hall Complex",
+                    "25-00633 Buckeye Hills Career Center",
                     "25-00617 Ohio University HCOM-Translational Research Center",
                     "AOH-260010 Franklin County PFM"
                 ]
-            },
-            {
-                "payroll_register_report": false
-            },
-            {
-                "worker_compensation_report": false
-            },
-            {
-                "job_costing_report": false
             }
         ]
     },
