@@ -301,36 +301,22 @@
     {
         "execute": true,
         "company_name": "Elevate Concrete Systems LLC",
-        "start_date": "2026-01-26",
-        "end_date": "2026-02-01",
+        "start_date": "2026-08-17",
+        "end_date": "2026-08-23",
         "reports": [
-            {
-                "union_report": false,
-                "report_name": []
-            },
             {
                 "prevailing_wage_report": true,
                 "projects": [
-                    "EL25-104 The Flats on Wolf Creek",
-                    "EL25-103 Jalen Lofts"
+                    "ECS-260003 Arlington Senior"
                 ]
-            },
-            {
-                "payroll_register_report": false
-            },
-            {
-                "worker_compensation_report": false
-            },
-            {
-                "job_costing_report": false
             }
         ]
     },
     {
         "execute": true,
         "company_name": "Omni Fireproofing Systems LLC",
-        "start_date": "2026-01-05",
-        "end_date": "2026-01-11",
+        "start_date": "2026-09-14",
+        "end_date": "2026-09-20",
         "reports": [
             {
                 "union_report": false,
@@ -339,44 +325,24 @@
             {
                 "prevailing_wage_report": true,
                 "projects": [
-                    "OM-24099 City of Loveland Fire Station 63"
+                    "OFS-260016 UC BLOCK 1 & 2",
+                    "OM-25098 CMH NEW TERMINAL FP"
                 ]
-            },
-            {
-                "payroll_register_report": false
-            },
-            {
-                "worker_compensation_report": false
-            },
-            {
-                "job_costing_report": false
             }
         ]
     },
     {
         "execute": true,
         "company_name": "Omni Fireproofing Systems LLC",
-        "start_date": "2026-03-02",
-        "end_date": "2026-03-08",
+        "start_date": "2026-09-07",
+        "end_date": "2026-09-13",
         "reports": [
-            {
-                "union_report": false,
-                "report_name": []
-            },
             {
                 "prevailing_wage_report": true,
                 "projects": [
-                    "OM-24112 GSA BRICKER USBC BACKFILL"
+                    "OM-24118 MUSKINGUM COUNTY JAIL",
+                    "OM-25055 Findlay Recreation Center"
                 ]
-            },
-            {
-                "payroll_register_report": false
-            },
-            {
-                "worker_compensation_report": false
-            },
-            {
-                "job_costing_report": false
             }
         ]
     },
@@ -469,13 +435,13 @@
     {
         "execute": true,
         "company_name": "Elevate Concrete Systems LLC",
-        "start_date": "2026-02-02",
-        "end_date": "2026-02-08",
+        "start_date": "2026-08-24",
+        "end_date": "2026-08-30",
         "reports": [
             {
                 "prevailing_wage_report": true,
                 "projects": [
-                    "EL24-122 Paragon Ranch-Blue Ash,OH"
+                    "ECS-260003 Arlington Senior"
                 ]
             }
         ]
@@ -483,41 +449,27 @@
     {
         "execute": true,
         "company_name": "Elevate Concrete Systems LLC",
-        "start_date": "2026-01-26",
-        "end_date": "2026-02-01",
+        "start_date": "2026-08-10",
+        "end_date": "2026-08-16",
         "reports": [
             {
                 "prevailing_wage_report": true,
                 "projects": [
-                    "EL24-122 Paragon Ranch-Blue Ash,OH"
+                    "ECS-260003 Arlington Senior"
                 ]
             }
         ]
     },
     {
         "execute": true,
-        "company_name": "Omni Fireproofing Systems LLC",
-        "start_date": "2026-04-06",
-        "end_date": "2026-04-12",
+        "company_name": "Elevate Concrete Systems LLC",
+        "start_date": "2026-08-03",
+        "end_date": "2026-08-09",
         "reports": [
             {
                 "prevailing_wage_report": true,
                 "projects": [
-                    "OM-25098 CMH NEW TERMINAL FP"
-                ]
-            }
-        ]
-    },
-    {
-        "execute": true,
-        "company_name": "Omni Fireproofing Systems LLC",
-        "start_date": "2026-03-30",
-        "end_date": "2026-04-05",
-        "reports": [
-            {
-                "prevailing_wage_report": true,
-                "projects": [
-                    "OM-25098 CMH NEW TERMINAL FP"
+                    "ECS-260003 Arlington Senior"
                 ]
             }
         ]
