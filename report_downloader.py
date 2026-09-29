@@ -1390,14 +1390,18 @@ def select_pay_period_via_view_type_calendar(page, start_date: str, end_date: st
         filter_toggle.check(force=True)
         page.wait_for_timeout(1000)
 
-        # "Paid" is the group checkbox and starts fully checked (every pay
-        # period in range selected) — uncheck it so only the one target
-        # period below ends up checked.
-        paid_group_checkbox = page.locator(
-            '//p[starts-with(normalize-space(.), "Paid")]/preceding-sibling::span//input[@type="checkbox"]'
+        # The group-select checkbox is labeled "Paid" on reports that group
+        # periods by status (and starts fully checked, every period in range
+        # selected), or "Select All" on reports with a flat list (and starts
+        # unchecked already). Either way, uncheck it — a no-op when it's
+        # already unchecked — so only the one target period below ends up
+        # checked.
+        group_select_checkbox = page.locator(
+            '//p[starts-with(normalize-space(.), "Paid") or normalize-space(.)="Select All"]'
+            '/preceding-sibling::span//input[@type="checkbox"]'
         )
-        expect(paid_group_checkbox.first).to_be_attached(timeout=120000)
-        paid_group_checkbox.first.uncheck(force=True)
+        expect(group_select_checkbox.first).to_be_attached(timeout=120000)
+        group_select_checkbox.first.uncheck(force=True)
         page.wait_for_timeout(500)
 
         # Match the exact row: date range text (e.g. "Apr 26 - May 2, 2026")
