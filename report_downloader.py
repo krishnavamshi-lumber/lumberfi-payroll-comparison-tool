@@ -1349,7 +1349,9 @@ def _click_calendar_range_day(page, target_dt) -> bool:
 def select_pay_period_via_view_type_calendar(page, start_date: str, end_date: str) -> bool:
     """Select the union report pay period on companies whose UI replaced the pay-period
     dropdown with a 'view type' selector (e.g. Precision Mechanical): switch the view to
-    'Pay Period', open the day-range calendar, click the start and end days, then Apply.
+    'Pay Period', open the day-range calendar, click the start and end days, turn on
+    'Filter payrolls' to narrow down to the single matching Regular/Off-Cycle pay
+    period, then Apply.
     """
     try:
         start_dt = datetime.strptime(start_date, "%Y-%m-%d")
@@ -1381,12 +1383,46 @@ def select_pay_period_via_view_type_calendar(page, start_date: str, end_date: st
             return False
         page.wait_for_timeout(500)
 
+        # Turn on "Filter payrolls" so the pay-period checklist (old-style Paid/
+        # Pending/Drafts list) appears below the calendar.
+        filter_toggle = page.locator('//input[@type="checkbox" and @aria-label="Filter payrolls"]')
+        expect(filter_toggle).to_be_visible(timeout=120000)
+        filter_toggle.check(force=True)
+        page.wait_for_timeout(1000)
+
+        # "Paid" is the group checkbox and starts fully checked (every pay
+        # period in range selected) — uncheck it so only the one target
+        # period below ends up checked.
+        paid_group_checkbox = page.locator(
+            '//p[starts-with(normalize-space(.), "Paid")]/preceding-sibling::span//input[@type="checkbox"]'
+        )
+        expect(paid_group_checkbox.first).to_be_attached(timeout=120000)
+        paid_group_checkbox.first.uncheck(force=True)
+        page.wait_for_timeout(500)
+
+        # Match the exact row: date range text (e.g. "Apr 26 - May 2, 2026")
+        # plus Regular/Off-Cycle status, since the same date range can appear
+        # twice (one Regular row, one Off-Cycle row).
+        is_off_cycle = "(Off-Cycle)" in end_date
+        status_text = "Off-Cycle" if is_off_cycle else "Regular"
+        date_label = f"{start_dt.strftime('%b')} {start_dt.day} - {end_dt.strftime('%b')} {end_dt.day}, {end_dt.year}"
+
+        period_row = page.locator(
+            f'//div[./div/p[contains(normalize-space(.), "{date_label}")]'
+            f' and ./p[contains(normalize-space(.), "{status_text}")]]'
+        )
+        expect(period_row.first).to_be_visible(timeout=120000)
+        period_checkbox = period_row.first.locator('input[type="checkbox"]')
+        expect(period_checkbox.first).to_be_attached(timeout=120000)
+        period_checkbox.first.check(force=True)
+        page.wait_for_timeout(500)
+
         apply_button = page.locator('//button[contains(., "Apply")]')
         expect(apply_button).to_be_visible(timeout=120000)
         apply_button.click()
         page.wait_for_timeout(5000)
 
-        log(f"[OK] Pay period range selected via calendar: {start_date} - {end_date}")
+        log(f"[OK] Pay period range selected via calendar: {start_date} - {end_date} ({status_text})")
         return True
     except Exception as exc:
         log(f"[WARN] Failed to select pay period via view-type calendar for '{start_date} - {end_date}': {exc}")
