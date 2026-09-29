@@ -90,9 +90,40 @@ DEFAULT_CONFIG_PATH = BASE_DIR / "garnishment_report.json"
 # classic calendar + pay-period-dropdown flow. Add a company to a report's
 # set once that report page has been confirmed to use the new selector.
 VIEW_TYPE_SELECTOR_COMPANIES: dict[str, set[str]] = {
-    "union_report": {"Precision Mechanical"},
-    # "401k_report": {"MIINC"},
-    # "worker_compensation_report": {"MIINC"},
+    "union_report": {
+        "Precision Mechanical",
+        "MIINC",
+        "American Asphalt South",
+        "Lynco Electric Co.",
+        "Yard 1",
+        "Sievert Electric Service & Sales Company",
+        "Fire Protection Professionals",
+    },
+    "401k_report": {
+        "MIINC",
+        "Yard 1",
+        "Sievert Electric Service & Sales Company",
+        "Bryan Construction, Inc",
+    },
+    "worker_compensation_report": {
+        "MIINC",
+        "American Asphalt South",
+        "Guyer Brothers Inc.",
+        "Evans Contracting Group, LLC",
+    },
+    "child_support_report": {
+        "MIINC",
+    },
+    "garnishment_report": {
+        "MIINC",
+        "American Asphalt South",
+    },
+    "payroll_journal_report": {
+        "Wagner Roofing Company",
+    },
+    "summary_of_wages_report": {
+        "MIINC",
+    },
 }
 
 
@@ -1051,14 +1082,19 @@ def download_summary_of_wages_report(service, page, company_name: str, folder_id
     navigate_to_report(page, "/reportsv2/payroll/census_report")
     page.wait_for_timeout(5000)
 
-    # Strip any suffix (e.g. "(Off-Cycle)") from end_date before passing to the calendar picker
-    end_date_clean = end_date.split()[0] if end_date else end_date
-    if not select_date_range_from_calendar(page, end_date_clean):
-        log("[WARN] Failed to select date range from calendar for Summary of Wages, continuing...")
+    if uses_view_type_selector(company_name, "summary_of_wages_report"):
+        period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date)
+    else:
+        # Strip any suffix (e.g. "(Off-Cycle)") from end_date before passing to the calendar picker
+        end_date_clean = end_date.split()[0] if end_date else end_date
+        if not select_date_range_from_calendar(page, end_date_clean):
+            log("[WARN] Failed to select date range from calendar for Summary of Wages, continuing...")
 
-    page.wait_for_timeout(10000)
-    page.click("body", position={"x": 100, "y": 100})
-    if not select_pay_period_for_summary_of_wages(page, start_date, end_date):
+        page.wait_for_timeout(10000)
+        page.click("body", position={"x": 100, "y": 100})
+        period_selected = select_pay_period_for_summary_of_wages(page, start_date, end_date)
+
+    if not period_selected:
         log("[INFO] Skipping summary of wages report section because pay period was not found.")
         if _failure_logger:
             _failure_logger.log_skip("Summary of Wages")
@@ -1116,14 +1152,19 @@ def download_child_support_report(service, page, company_name: str, folder_id: s
     navigate_to_report(page, "/reportsv2/payroll/child_support_payments")
     page.wait_for_timeout(5000)
 
-    # Strip any suffix (e.g. "(Off-Cycle)") from end_date before passing to the calendar picker
-    end_date_clean = end_date.split()[0] if end_date else end_date
-    if not select_date_range_from_calendar(page, end_date_clean):
-        log("[WARN] Failed to select date range from calendar for Child Support, continuing...")
+    if uses_view_type_selector(company_name, "child_support_report"):
+        period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date)
+    else:
+        # Strip any suffix (e.g. "(Off-Cycle)") from end_date before passing to the calendar picker
+        end_date_clean = end_date.split()[0] if end_date else end_date
+        if not select_date_range_from_calendar(page, end_date_clean):
+            log("[WARN] Failed to select date range from calendar for Child Support, continuing...")
 
-    page.wait_for_timeout(5000)
-    page.click("body", position={"x": 100, "y": 100})
-    if not select_pay_period_for_summary_of_wages(page, start_date, end_date, item_index=pay_period_index):
+        page.wait_for_timeout(5000)
+        page.click("body", position={"x": 100, "y": 100})
+        period_selected = select_pay_period_for_summary_of_wages(page, start_date, end_date, item_index=pay_period_index)
+
+    if not period_selected:
         log("[INFO] Skipping child support report section because pay period was not found.")
         if _failure_logger:
             _failure_logger.log_skip("Child Support Remittance")
@@ -1155,15 +1196,20 @@ def download_garnishment_report(service, page, company_name: str, folder_id: str
     navigate_to_report(page, "/reportsv2/payroll/garnishment_report")
     page.wait_for_timeout(5000)
 
-    # Strip any suffix (e.g. "(Off-Cycle)") from end_date before passing to the calendar picker
-    end_date_clean = end_date.split()[0] if end_date else end_date
-    if not select_date_range_from_calendar(page, end_date_clean):
-        log("[WARN] Failed to select date range from calendar for Garnishment, continuing...")
+    if uses_view_type_selector(company_name, "garnishment_report"):
+        period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date)
+    else:
+        # Strip any suffix (e.g. "(Off-Cycle)") from end_date before passing to the calendar picker
+        end_date_clean = end_date.split()[0] if end_date else end_date
+        if not select_date_range_from_calendar(page, end_date_clean):
+            log("[WARN] Failed to select date range from calendar for Garnishment, continuing...")
 
-    page.wait_for_timeout(5000)
-    page.click("body", position={"x": 100, "y": 100})
-    page.click("body", position={"x": 100, "y": 100})
-    if not select_pay_period_for_summary_of_wages(page, start_date, end_date, item_index=pay_period_index):
+        page.wait_for_timeout(5000)
+        page.click("body", position={"x": 100, "y": 100})
+        page.click("body", position={"x": 100, "y": 100})
+        period_selected = select_pay_period_for_summary_of_wages(page, start_date, end_date, item_index=pay_period_index)
+
+    if not period_selected:
         log("[INFO] Skipping garnishment report section because pay period was not found.")
         if _failure_logger:
             _failure_logger.log_skip("Garnishment Report")
@@ -1682,11 +1728,16 @@ def download_payroll_journal_report(service, page, company_name: str, folder_id:
     navigate_to_report(page, "/reportsv2/payroll/payroll_journal_report")
     page.click("body", position={"x": 100, "y": 100})
 
-    if not select_date_range_from_calendar(page, end_date):
-        log("[WARN] Failed to select date range from calendar for Payroll Journal, continuing...")
-    
-    page.wait_for_timeout(30000)
-    if not select_pay_period_for_401k(page, start_date, end_date):
+    if uses_view_type_selector(company_name, "payroll_journal_report"):
+        period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date)
+    else:
+        if not select_date_range_from_calendar(page, end_date):
+            log("[WARN] Failed to select date range from calendar for Payroll Journal, continuing...")
+
+        page.wait_for_timeout(30000)
+        period_selected = select_pay_period_for_401k(page, start_date, end_date)
+
+    if not period_selected:
         log("[INFO] Skipping Payroll Journal report because pay period was not found.")
         if _failure_logger:
             _failure_logger.log_skip("Payroll Journal")
