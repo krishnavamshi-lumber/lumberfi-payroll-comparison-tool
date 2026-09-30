@@ -1346,12 +1346,16 @@ def _click_calendar_range_day(page, target_dt) -> bool:
     return False
 
 
-def select_pay_period_via_view_type_calendar(page, start_date: str, end_date: str) -> bool:
+def select_pay_period_via_view_type_calendar(page, start_date: str, end_date: str, select_specific_period: bool = True) -> bool:
     """Select the union report pay period on companies whose UI replaced the pay-period
     dropdown with a 'view type' selector (e.g. Precision Mechanical): switch the view to
-    'Pay Period', open the day-range calendar, click the start and end days, turn on
-    'Filter payrolls' to narrow down to the single matching Regular/Off-Cycle pay
-    period, then Apply.
+    'Pay Period', open the day-range calendar, click the start and end days, then Apply.
+
+    When select_specific_period is True (default), also turns on 'Filter payrolls'
+    first to narrow the calendar range down to the single matching Regular/Off-Cycle
+    pay period before Applying. Some companies (e.g. Precision Mechanical's union
+    report) want the whole calendar range applied as a group instead, so pass False
+    to skip that narrowing step.
     """
     try:
         start_dt = datetime.strptime(start_date, "%Y-%m-%d")
@@ -1383,43 +1387,45 @@ def select_pay_period_via_view_type_calendar(page, start_date: str, end_date: st
             return False
         page.wait_for_timeout(500)
 
-        # Turn on "Filter payrolls" so the pay-period checklist (old-style Paid/
-        # Pending/Drafts list) appears below the calendar.
-        filter_toggle = page.locator('//input[@type="checkbox" and @aria-label="Filter payrolls"]')
-        expect(filter_toggle).to_be_visible(timeout=120000)
-        filter_toggle.check(force=True)
-        page.wait_for_timeout(1000)
+        status_text = "grouped range"
+        if select_specific_period:
+            # Turn on "Filter payrolls" so the pay-period checklist (old-style
+            # Paid/Pending/Drafts list) appears below the calendar.
+            filter_toggle = page.locator('//input[@type="checkbox" and @aria-label="Filter payrolls"]')
+            expect(filter_toggle).to_be_visible(timeout=120000)
+            filter_toggle.check(force=True)
+            page.wait_for_timeout(1000)
 
-        # The group-select checkbox is labeled "Paid" on reports that group
-        # periods by status (and starts fully checked, every period in range
-        # selected), or "Select All" on reports with a flat list (and starts
-        # unchecked already). Either way, uncheck it — a no-op when it's
-        # already unchecked — so only the one target period below ends up
-        # checked.
-        group_select_checkbox = page.locator(
-            '//p[starts-with(normalize-space(.), "Paid") or normalize-space(.)="Select All"]'
-            '/preceding-sibling::span//input[@type="checkbox"]'
-        )
-        expect(group_select_checkbox.first).to_be_attached(timeout=120000)
-        group_select_checkbox.first.uncheck(force=True)
-        page.wait_for_timeout(500)
+            # The group-select checkbox is labeled "Paid" on reports that group
+            # periods by status (and starts fully checked, every period in range
+            # selected), or "Select All" on reports with a flat list (and starts
+            # unchecked already). Either way, uncheck it — a no-op when it's
+            # already unchecked — so only the one target period below ends up
+            # checked.
+            group_select_checkbox = page.locator(
+                '//p[starts-with(normalize-space(.), "Paid") or normalize-space(.)="Select All"]'
+                '/preceding-sibling::span//input[@type="checkbox"]'
+            )
+            expect(group_select_checkbox.first).to_be_attached(timeout=120000)
+            group_select_checkbox.first.uncheck(force=True)
+            page.wait_for_timeout(500)
 
-        # Match the exact row: date range text (e.g. "Apr 26 - May 2, 2026")
-        # plus Regular/Off-Cycle status, since the same date range can appear
-        # twice (one Regular row, one Off-Cycle row).
-        is_off_cycle = "(Off-Cycle)" in end_date
-        status_text = "Off-Cycle" if is_off_cycle else "Regular"
-        date_label = f"{start_dt.strftime('%b')} {start_dt.day} - {end_dt.strftime('%b')} {end_dt.day}, {end_dt.year}"
+            # Match the exact row: date range text (e.g. "Apr 26 - May 2, 2026")
+            # plus Regular/Off-Cycle status, since the same date range can appear
+            # twice (one Regular row, one Off-Cycle row).
+            is_off_cycle = "(Off-Cycle)" in end_date
+            status_text = "Off-Cycle" if is_off_cycle else "Regular"
+            date_label = f"{start_dt.strftime('%b')} {start_dt.day} - {end_dt.strftime('%b')} {end_dt.day}, {end_dt.year}"
 
-        period_row = page.locator(
-            f'//div[./div/p[contains(normalize-space(.), "{date_label}")]'
-            f' and ./p[contains(normalize-space(.), "{status_text}")]]'
-        )
-        expect(period_row.first).to_be_visible(timeout=120000)
-        period_checkbox = period_row.first.locator('input[type="checkbox"]')
-        expect(period_checkbox.first).to_be_attached(timeout=120000)
-        period_checkbox.first.check(force=True)
-        page.wait_for_timeout(500)
+            period_row = page.locator(
+                f'//div[./div/p[contains(normalize-space(.), "{date_label}")]'
+                f' and ./p[contains(normalize-space(.), "{status_text}")]]'
+            )
+            expect(period_row.first).to_be_visible(timeout=120000)
+            period_checkbox = period_row.first.locator('input[type="checkbox"]')
+            expect(period_checkbox.first).to_be_attached(timeout=120000)
+            period_checkbox.first.check(force=True)
+            page.wait_for_timeout(500)
 
         apply_button = page.locator('//button[contains(., "Apply")]')
         expect(apply_button).to_be_visible(timeout=120000)
@@ -1444,7 +1450,10 @@ def download_union_reports(service, page, company_name: str, report_names: list[
     label_end_date = pay_periods[0].get("end_date", end_date) if use_multi_period else end_date
 
     if uses_view_type_selector(company_name, "union_report"):
-        if not select_pay_period_via_view_type_calendar(page, start_date, end_date):
+        # Precision Mechanical wants the whole calendar range applied as a
+        # group rather than narrowed to one specific pay period.
+        select_specific_period = company_name != "Precision Mechanical"
+        if not select_pay_period_via_view_type_calendar(page, start_date, end_date, select_specific_period=select_specific_period):
             log("[INFO] Skipping union report section because pay period range could not be selected.")
             if _failure_logger:
                 _failure_logger.log_skip("Union Report")
