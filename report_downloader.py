@@ -1153,7 +1153,7 @@ def download_child_support_report(service, page, company_name: str, folder_id: s
     page.wait_for_timeout(5000)
 
     if uses_view_type_selector(company_name, "child_support_report"):
-        period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date)
+        period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date, pay_period_index=pay_period_index)
     else:
         # Strip any suffix (e.g. "(Off-Cycle)") from end_date before passing to the calendar picker
         end_date_clean = end_date.split()[0] if end_date else end_date
@@ -1197,7 +1197,7 @@ def download_garnishment_report(service, page, company_name: str, folder_id: str
     page.wait_for_timeout(5000)
 
     if uses_view_type_selector(company_name, "garnishment_report"):
-        period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date)
+        period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date, pay_period_index=pay_period_index)
     else:
         # Strip any suffix (e.g. "(Off-Cycle)") from end_date before passing to the calendar picker
         end_date_clean = end_date.split()[0] if end_date else end_date
@@ -1346,7 +1346,7 @@ def _click_calendar_range_day(page, target_dt) -> bool:
     return False
 
 
-def select_pay_period_via_view_type_calendar(page, start_date: str, end_date: str, select_specific_period: bool = True) -> bool:
+def select_pay_period_via_view_type_calendar(page, start_date: str, end_date: str, select_specific_period: bool = True, pay_period_index: int = 0) -> bool:
     """Select the union report pay period on companies whose UI replaced the pay-period
     dropdown with a 'view type' selector (e.g. Precision Mechanical): switch the view to
     'Pay Period', open the day-range calendar, click the start and end days, then Apply.
@@ -1355,7 +1355,8 @@ def select_pay_period_via_view_type_calendar(page, start_date: str, end_date: st
     first to narrow the calendar range down to the single matching Regular/Off-Cycle
     pay period before Applying. Some companies (e.g. Precision Mechanical's union
     report) want the whole calendar range applied as a group instead, so pass False
-    to skip that narrowing step.
+    to skip that narrowing step. When multiple rows match the same date range and
+    Regular/Off-Cycle status, pay_period_index picks which one (0-based).
     """
     try:
         start_dt = datetime.strptime(start_date, "%Y-%m-%d")
@@ -1421,8 +1422,9 @@ def select_pay_period_via_view_type_calendar(page, start_date: str, end_date: st
                 f'//div[./div/p[contains(normalize-space(.), "{date_label}")]'
                 f' and ./p[contains(normalize-space(.), "{status_text}")]]'
             )
-            expect(period_row.first).to_be_visible(timeout=120000)
-            period_checkbox = period_row.first.locator('input[type="checkbox"]')
+            target_row = period_row.nth(pay_period_index)
+            expect(target_row).to_be_visible(timeout=120000)
+            period_checkbox = target_row.locator('input[type="checkbox"]')
             expect(period_checkbox.first).to_be_attached(timeout=120000)
             period_checkbox.first.check(force=True)
             page.wait_for_timeout(500)
