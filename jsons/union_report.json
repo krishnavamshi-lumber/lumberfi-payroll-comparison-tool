@@ -98,5 +98,33 @@
                 ]
             }
         ]
+    },
+    {
+        "execute": true,
+        "company_name": "Pro 1 Electric, Inc.",
+        "start_date": "2026-08-31",
+        "end_date": "2026-09-06",
+        "reports": [
+            {
+                "union_report": true,
+                "report_name": [
+                    "4th District Central Regional Agreement 968"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
+        "start_date": "2026-07-06",
+        "end_date": "2026-07-12",
+        "reports": [
+            {
+                "union_report": true,
+                "report_name": [
+                    "Local 200"
+                ]
+            }
+        ]
     }
 ]

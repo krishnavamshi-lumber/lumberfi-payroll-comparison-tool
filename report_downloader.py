@@ -98,6 +98,8 @@ VIEW_TYPE_SELECTOR_COMPANIES: dict[str, set[str]] = {
         "Yard 1",
         "Sievert Electric Service & Sales Company",
         "Fire Protection Professionals",
+        "Pro 1 Electric, Inc.",
+        "Acoustic Ceiling & Partition of Ohio, Inc."
     },
     "401k_report": {
         "MIINC",

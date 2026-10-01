@@ -716,5 +716,77 @@
                 ]
             }
         ]
+    },
+    {
+        "execute": true,
+        "company_name": "Verslues Construction Co., Inc",
+        "start_date": "2026-09-23",
+        "end_date": "2026-09-29",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "MSHP Interoperability Center Roof & Reno",
+                    "Troop F HQ/CDL Super Site Improvements"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Marcus Construction",
+        "start_date": "2026-09-20",
+        "end_date": "2026-09-26",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "2622 Robbins Island - Amphitheater @ Willmar, MN"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Marcus Construction",
+        "start_date": "2026-09-13",
+        "end_date": "2026-09-19",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "2622 Robbins Island - Amphitheater @ Willmar, MN"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "No Sweat KC",
+        "start_date": "2026-08-30",
+        "end_date": "2026-09-05",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "KCVA EHRM",
+                    "KCVA PO 1373 SPS"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "K&B Mechanical",
+        "start_date": "2026-09-21",
+        "end_date": "2026-09-27",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Wattsburg School Dist"
+                ]
+            }
+        ]
     }
 ]
