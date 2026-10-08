@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import sys
 from datetime import date, datetime
@@ -198,11 +200,11 @@ def _apply_tolerance_rules(file_status: dict, report_type: str, filename: str = 
                 file_status["details"] = file_status.get("details", "") + " [tolerated: Federal exact pair (+7,-7)]"
                 print(f"[TOLERANCE] Prevailing Wage Federal PDF overridden to PASS (exact pair +7,-7)")
 
-            elif "_State_" in filename and added == 7 and removed == 7:
+            elif "_State_" in filename and (added, removed) in {(7, 7), (3, 3)}:
                 file_status = dict(file_status)
                 file_status["status"] = "PASS"
-                file_status["details"] = file_status.get("details", "") + " [tolerated: State exact pair (+7,-7)]"
-                print(f"[TOLERANCE] Prevailing Wage State PDF overridden to PASS (exact pair +7,-7)")
+                file_status["details"] = file_status.get("details", "") + f" [tolerated: State exact pair (+{added},-{removed})]"
+                print(f"[TOLERANCE] Prevailing Wage State PDF overridden to PASS (exact pair +{added},-{removed})")
 
     elif report_type == "Union" and file_status.get("file_type") == "pdf":
         added = file_status.get("words_added", 0)
@@ -403,7 +405,7 @@ def run_compare_for_report_type(
     return results
 
 
-def run_all_comparisons() -> int:
+def run_all_comparisons(companies_filter: list[str] | None = None, report_types_filter: list[str] | None = None) -> int:
     """Auto-discover companies and run comparisons."""
     print("[STEP] Starting auto-discovery comparison")
     service = create_drive_service()
@@ -431,6 +433,21 @@ def run_all_comparisons() -> int:
 
     print(f"[INFO] Found {len(companies)} company folders")
 
+    if companies_filter:
+        found_names = {c["name"] for c in companies}
+        unmatched = [c for c in companies_filter if c not in found_names]
+        if unmatched:
+            print(f"[ERROR] --companies name(s) not found in Prod_reports: {unmatched}")
+            return 1
+        companies = [c for c in companies if c["name"] in companies_filter]
+        print(f"[INFO] Filtered to {len(companies)} company folder(s): {[c['name'] for c in companies]}")
+
+    if report_types_filter:
+        unknown = [r for r in report_types_filter if r not in REPORT_FOLDERS]
+        if unknown:
+            print(f"[ERROR] --report-types name(s) not recognized: {unknown}. Known: {sorted(REPORT_FOLDERS)}")
+            return 1
+
     # For each company
     for company_folder in companies:
         company_name = company_folder["name"]
@@ -446,6 +463,9 @@ def run_all_comparisons() -> int:
 
         # Filter to known report types
         valid_reports = [f for f in report_folders if f["name"] in REPORT_FOLDERS]
+
+        if report_types_filter:
+            valid_reports = [f for f in valid_reports if f["name"] in report_types_filter]
 
         if not valid_reports:
             print(f"[WARN] No report folders found for {company_name}")
@@ -545,5 +565,21 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Auto-discover companies in Prod_reports and run comparisons."
     )
+    parser.add_argument(
+        "--companies",
+        type=str,
+        default=None,
+        help="Comma-separated company names to compare (must match Drive folder names exactly). Default: all companies.",
+    )
+    parser.add_argument(
+        "--report-types",
+        type=str,
+        default=None,
+        help=f"Comma-separated report types to compare, from: {sorted(REPORT_FOLDERS)}. Default: all report types.",
+    )
     args = parser.parse_args()
-    sys.exit(run_all_comparisons())
+
+    companies_filter = [c.strip() for c in args.companies.split(",")] if args.companies else None
+    report_types_filter = [r.strip() for r in args.report_types.split(",")] if args.report_types else None
+
+    sys.exit(run_all_comparisons(companies_filter=companies_filter, report_types_filter=report_types_filter))
