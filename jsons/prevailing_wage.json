@@ -788,5 +788,19 @@
                 ]
             }
         ]
+    },
+    {
+        "execute": true,
+        "company_name": "Fitztastic Surfaces",
+        "start_date": "2026-10-03",
+        "end_date": "2026-10-09",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Other Project"
+                ]
+            }
+        ]
     }
 ]

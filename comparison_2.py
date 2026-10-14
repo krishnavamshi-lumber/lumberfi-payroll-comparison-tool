@@ -169,6 +169,11 @@ def _apply_tolerance_rules(file_status: dict, report_type: str, filename: str = 
     if file_status.get("status") != "FAIL":
         return file_status
 
+    if file_status.get("column_count_mismatch") or file_status.get("column_order_mismatch"):
+        # Never tolerate a structural column mismatch away — it means the
+        # report's schema itself changed, not just noisy row-level values.
+        return file_status
+
     if report_type == "Prevailing Wage" and file_status.get("file_type") == "pdf":
         if "_State_" in filename and company_name in _STATE_PDF_PAGES_COMPARED_COMPANIES:
             tolerance = file_status.get("pages_compared", 1)

@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import difflib
 import io
+import json
 import os
 import sys
 
@@ -183,6 +184,70 @@ def _get_file_extension(filename: str) -> str:
     return os.path.splitext(filename or "")[1].strip().lower()
 
 
+COLUMN_MISMATCH_MARKER = "[COLUMN MISMATCH]"
+COLUMN_MISMATCH_META_SEP = "||META||"
+
+
+def _compute_column_mismatch(truth_columns: list, compare_columns: list) -> dict:
+    """
+    Compare the raw column lists (as read from each source file, before any
+    reindexing/sorting) for count and order differences.
+    """
+    truth_columns = list(truth_columns)
+    compare_columns = list(compare_columns)
+    return {
+        "truth_columns": truth_columns,
+        "compare_columns": compare_columns,
+        "column_count_mismatch": len(truth_columns) != len(compare_columns),
+        "column_order_mismatch": truth_columns != compare_columns,
+        "missing_in_compare": [c for c in truth_columns if c not in compare_columns],
+        "extra_in_compare": [c for c in compare_columns if c not in truth_columns],
+    }
+
+
+def _write_column_mismatch_banner(ws, mismatch: dict, total_columns: int, fill) -> None:
+    """
+    If `mismatch` indicates a count or order difference, insert a highlighted
+    banner row at the top of the sheet (before the header row) describing it,
+    and embed a machine-readable JSON blob after a `||META||` separator so
+    extract_excel_status() can parse it back out.
+    """
+    if not (mismatch["column_count_mismatch"] or mismatch["column_order_mismatch"]):
+        return
+
+    truth_columns = mismatch["truth_columns"]
+    compare_columns = mismatch["compare_columns"]
+    missing_in_compare = mismatch["missing_in_compare"]
+    extra_in_compare = mismatch["extra_in_compare"]
+
+    human_text = (
+        f"{COLUMN_MISMATCH_MARKER} Truth has {len(truth_columns)} column(s), "
+        f"Compare has {len(compare_columns)} column(s). "
+        f"Missing in Compare: {missing_in_compare or 'None'}. "
+        f"Extra in Compare: {extra_in_compare or 'None'}. "
+        f"Order differs: {'Yes' if mismatch['column_order_mismatch'] else 'No'}."
+    )
+    meta_json = json.dumps({
+        "truth_columns": truth_columns,
+        "compare_columns": compare_columns,
+        "missing_in_compare": missing_in_compare,
+        "extra_in_compare": extra_in_compare,
+        "column_count_mismatch": mismatch["column_count_mismatch"],
+        "column_order_mismatch": mismatch["column_order_mismatch"],
+    })
+
+    ws.append([f"{human_text}{COLUMN_MISMATCH_META_SEP}{meta_json}"])
+    banner_row = ws.max_row
+    for col_idx in range(1, max(total_columns, 1) + 1):
+        ws.cell(banner_row, col_idx).fill = fill
+    banner_cell = ws.cell(banner_row, 1)
+    banner_cell.font = banner_cell.font.copy(bold=True)
+    banner_cell.alignment = banner_cell.alignment.copy(wrap_text=True)
+    ws.row_dimensions[banner_row].height = 30
+    if total_columns > 1:
+        ws.merge_cells(start_row=banner_row, start_column=1, end_row=banner_row, end_column=total_columns)
+
+
 def compare_pdfs(
     truth_pdf_bytes: bytes,
     compare_pdf_bytes: bytes,
@@ -251,6 +316,7 @@ def compare_worker_comp_csvs(
         from collections import defaultdict
         from openpyxl import Workbook
         from openpyxl.styles import PatternFill, Font, Alignment
+        from openpyxl.utils import get_column_letter
     except ImportError as exc:
         raise ImportError(
             f"Missing dependency for tabular comparison: {exc}. "
@@ -260,12 +326,15 @@ def compare_worker_comp_csvs(
     RED_FILL    = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
     GREEN_FILL  = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")
     YELLOW_FILL = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")
+    ORANGE_FILL = PatternFill(start_color="FFD8A8", end_color="FFD8A8", fill_type="solid")
 
     def _read_csv(file_bytes: bytes):
         return pd.read_csv(io.BytesIO(file_bytes), dtype=str, keep_default_na=False).fillna("")
 
     df_a = _read_csv(truth_csv_bytes)
     df_b = _read_csv(compare_csv_bytes)
+
+    column_mismatch = _compute_column_mismatch(df_a.columns, df_b.columns)
 
     columns = list(dict.fromkeys(list(df_a.columns) + list(df_b.columns)))
     df_a = df_a.reindex(columns=columns, fill_value="")
@@ -304,8 +373,12 @@ def compare_worker_comp_csvs(
     for col in columns:
         headers.append(f"{truth_label}  {col}")
         headers.append(f"{compare_label}  {col}")
+
+    _write_column_mismatch_banner(ws, column_mismatch, len(headers), ORANGE_FILL)
+
     ws.append(headers)
-    for cell in ws[1]:
+    header_row = ws.max_row
+    for cell in ws[header_row]:
         cell.font = Font(bold=True)
         cell.alignment = Alignment(wrap_text=True)
 
@@ -356,9 +429,9 @@ def compare_worker_comp_csvs(
                         ws.cell(excel_row, col_pointer + 1).fill = YELLOW_FILL
                     col_pointer += 2
 
-    for col in ws.columns:
+    for col_idx, col in enumerate(ws.columns, start=1):
         max_len = max((len(str(cell.value)) for cell in col if cell.value), default=0)
-        ws.column_dimensions[col[0].column_letter].width = min(max_len + 2, 40)
+        ws.column_dimensions[get_column_letter(col_idx)].width = min(max_len + 2, 40)
 
     buf = io.BytesIO()
     wb.save(buf)
@@ -479,6 +552,7 @@ def compare_csvs(
         import pandas as pd
         from openpyxl import Workbook
         from openpyxl.styles import PatternFill, Font, Alignment
+        from openpyxl.utils import get_column_letter
     except ImportError as exc:
         raise ImportError(
             f"Missing dependency for tabular comparison: {exc}. "
@@ -488,6 +562,7 @@ def compare_csvs(
     RED_FILL = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
     GREEN_FILL = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")
     YELLOW_FILL = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")
+    ORANGE_FILL = PatternFill(start_color="FFD8A8", end_color="FFD8A8", fill_type="solid")
 
     tabs_a = _read_tabular_file(truth_csv_bytes)
     tabs_b = _read_tabular_file(compare_csv_bytes)
@@ -500,6 +575,8 @@ def compare_csvs(
     for sheet_name in sheet_names:
         df_a = tabs_a.get(sheet_name, pd.DataFrame())
         df_b = tabs_b.get(sheet_name, pd.DataFrame())
+
+        column_mismatch = _compute_column_mismatch(df_a.columns, df_b.columns)
 
         columns = sorted(set(df_a.columns) | set(df_b.columns))
         df_a = df_a.reindex(columns=columns, fill_value="")
@@ -517,8 +594,12 @@ def compare_csvs(
         for col in columns:
             headers.append(f"{truth_label}  {col}")
             headers.append(f"{compare_label}  {col}")
+
+        _write_column_mismatch_banner(ws, column_mismatch, len(headers), ORANGE_FILL)
+
         ws.append(headers)
-        for cell in ws[1]:
+        header_row = ws.max_row
+        for cell in ws[header_row]:
             cell.font = Font(bold=True)
             cell.alignment = Alignment(wrap_text=True)
 
@@ -559,706 +640,10 @@ def compare_csvs(
                         ws.cell(excel_row, col_pointer + 1).fill = YELLOW_FILL
                     col_pointer += 2
 
-        for col in ws.columns:
+        for col_idx, col in enumerate(ws.columns, start=1):
             max_len = max((len(str(cell.value)) for cell in col if cell.value), default=0)
-            ws.column_dimensions[col[0].column_letter].width = min(max_len + 2, 40)
+            ws.column_dimensions[get_column_letter(col_idx)].width = min(max_len + 2, 40)
 
     buf = io.BytesIO()
     wb.save(buf)
     return buf.getvalue()
-
-# """
-# Structured comparison utilities for PDFs and CSVs.
-
-# PDF comparison:
-# - Parses payroll employee sections instead of raw word-stream diffs
-# - Matches employees using emp_key = normalized_name|identity_number
-# - Highlights:
-#     RED    = employee removed
-#     GREEN  = employee added
-#     YELLOW = employee present but changed
-
-# CSV comparison:
-# - Existing emp_key comparison retained
-# """
-
-# from __future__ import annotations
-
-# import difflib
-# import io
-# import re
-# import sys
-# from dataclasses import dataclass
-# from typing import Dict, List, Tuple
-
-# try:
-#     import fitz  # PyMuPDF
-# except ImportError:
-#     sys.exit("Missing dependency. Run: pip install pymupdf")
-
-
-# # =============================================================================
-# # PDF EMPLOYEE STRUCTURES
-# # =============================================================================
-
-# @dataclass
-# class EmployeeRecord:
-#     emp_key: str
-#     name: str
-#     identity: str
-#     page_num: int
-#     rect: fitz.Rect
-#     raw_text: str
-#     normalized_text: str
-
-
-# # =============================================================================
-# # NORMALIZATION HELPERS
-# # =============================================================================
-
-# def _normalize_text(text: str) -> str:
-#     text = text.replace("\n", " ")
-#     text = text.replace("\u00ad", "")
-#     text = text.replace("￾", "")
-#     text = re.sub(r"\s+", " ", text)
-#     return text.strip()
-
-
-# def _normalize_name(name: str) -> str:
-#     """
-#     Generic name normalization.
-
-#     Handles:
-#     - weird spacing
-#     - OCR artifacts
-#     - unicode junk
-#     - inconsistent separators
-#     """
-
-#     name = _normalize_text(name).lower()
-
-#     # remove invisible / junk unicode chars
-#     name = re.sub(r"[\u00ad\ufffe\uffff]", "", name)
-
-#     # collapse multiple spaces
-#     name = re.sub(r"\s+", " ", name)
-
-#     # keep only reasonable name chars
-#     name = re.sub(r"[^a-z0-9,\- ]", "", name)
-
-#     return name.strip()
-
-
-# def _clean_identity(identity: str) -> str:
-#     identity = re.sub(r"[^\d\-]", "", identity)
-#     return identity.strip()
-
-
-# # =============================================================================
-# # EMPLOYEE EXTRACTION
-# # =============================================================================
-
-# SSN_RE = re.compile(r"\d{3}-\d{2}-\d{4}")
-
-
-# def _extract_employee_blocks(page: fitz.Page) -> List[Tuple[fitz.Rect, str]]:
-#     """
-#     Extract visually grouped text blocks.
-#     """
-#     blocks = page.get_text("blocks")
-
-#     extracted = []
-
-#     for block in blocks:
-#         x0, y0, x1, y1, text, *_ = block
-
-#         text = _normalize_text(text)
-
-#         if not text:
-#             continue
-
-#         if not SSN_RE.search(text):
-#             continue
-
-#         extracted.append((fitz.Rect(x0, y0, x1, y1), text))
-
-#     return extracted
-
-
-# def _extract_name_and_ssn(text: str) -> Tuple[str, str]:
-#     ssn_match = SSN_RE.search(text)
-
-#     if not ssn_match:
-#         return "", ""
-
-#     ssn = ssn_match.group(0)
-
-#     before_ssn = text[:ssn_match.start()].strip()
-
-#     lines = [l.strip() for l in before_ssn.splitlines() if l.strip()]
-
-#     if not lines:
-#         return "", ssn
-
-#     candidate = lines[-1]
-
-#     candidate = _normalize_text(candidate)
-
-#     return candidate, ssn
-
-
-# def _build_emp_key(name: str, identity: str) -> str:
-#     compact_name = re.sub(r"[^a-z]", "", name.lower())
-#     clean_ssn = re.sub(r"[^\d]", "", identity)
-
-#     return f"{compact_name}|{clean_ssn}"
-
-
-# def _extract_employee_records(doc: fitz.Document) -> Dict[str, EmployeeRecord]:
-#     """
-#     Parse employee records from payroll PDF.
-#     """
-
-#     records: Dict[str, EmployeeRecord] = {}
-
-#     for page_num in range(len(doc)):
-#         page = doc[page_num]
-
-#         for rect, text in _extract_employee_blocks(page):
-
-#             name, identity = _extract_name_and_ssn(text)
-
-#             if not name or not identity:
-#                 continue
-
-#             emp_key = _build_emp_key(name, identity)
-
-#             normalized_text = _normalize_text(text).lower()
-
-#             if emp_key in records:
-#                 existing = records[emp_key]
-
-#                 merged_text = (
-#                     existing.normalized_text
-#                     + "\n"
-#                     + normalized_text
-#                 )
-
-#                 merged_rect = fitz.Rect(
-#                     min(existing.rect.x0, rect.x0),
-#                     min(existing.rect.y0, rect.y0),
-#                     max(existing.rect.x1, rect.x1),
-#                     max(existing.rect.y1, rect.y1),
-#                 )
-
-#                 records[emp_key] = EmployeeRecord(
-#                     emp_key=emp_key,
-#                     name=name,
-#                     identity=identity,
-#                     page_num=page_num,
-#                     rect=merged_rect,
-#                     raw_text=existing.raw_text + "\n" + text,
-#                     normalized_text=merged_text,
-#                 )
-#             else:
-#                 records[emp_key] = EmployeeRecord(
-#                     emp_key=emp_key,
-#                     name=name,
-#                     identity=identity,
-#                     page_num=page_num,
-#                     rect=rect,
-#                     raw_text=text,
-#                     normalized_text=normalized_text,
-#                 )
-
-#     return records
-
-
-# # =============================================================================
-# # PDF VISUAL PAGE BUILDER
-# # =============================================================================
-
-# def _draw_highlight(
-#     page: fitz.Page,
-#     rect: fitz.Rect,
-#     color: Tuple[float, float, float],
-# ):
-#     pad = 2
-
-#     expanded = fitz.Rect(
-#         rect.x0 - pad,
-#         rect.y0 - pad,
-#         rect.x1 + pad,
-#         rect.y1 + pad,
-#     )
-
-#     page.draw_rect(
-#         expanded,
-#         color=None,
-#         fill=color,
-#         fill_opacity=0.28,
-#         overlay=True,
-#     )
-
-
-# def _record_changed(a: EmployeeRecord, b: EmployeeRecord) -> bool:
-#     return a.normalized_text != b.normalized_text
-
-
-# def _build_combined_page(
-#     out_doc: fitz.Document,
-#     doc_a: fitz.Document,
-#     doc_b: fitz.Document,
-#     page_num: int,
-#     total_pages: int,
-#     a_records: Dict[str, EmployeeRecord],
-#     b_records: Dict[str, EmployeeRecord],
-# ):
-#     has_a = page_num < len(doc_a)
-#     has_b = page_num < len(doc_b)
-
-#     ref_page = doc_a[page_num] if has_a else doc_b[page_num]
-
-#     pw = ref_page.rect.width
-#     ph = ref_page.rect.height
-
-#     DIVIDER = 2
-#     LABEL_H = 24
-
-#     canvas_w = pw * 2 + DIVIDER
-#     canvas_h = ph + LABEL_H
-
-#     new_page = out_doc.new_page(width=canvas_w, height=canvas_h)
-
-#     new_page.draw_rect(
-#         fitz.Rect(0, 0, canvas_w, canvas_h),
-#         color=None,
-#         fill=(0.96, 0.95, 0.93),
-#     )
-
-#     new_page.insert_text(
-#         (8, 16),
-#         f"TRUTH  (page {page_num + 1}/{total_pages})",
-#         fontsize=10,
-#         color=(0.5, 0.1, 0.1),
-#     )
-
-#     new_page.insert_text(
-#         (pw + DIVIDER + 8, 16),
-#         f"COMPARE  (page {page_num + 1}/{total_pages})",
-#         fontsize=10,
-#         color=(0.1, 0.4, 0.1),
-#     )
-
-#     new_page.draw_line(
-#         (pw + DIVIDER / 2, 0),
-#         (pw + DIVIDER / 2, canvas_h),
-#         color=(0.7, 0.7, 0.7),
-#         width=1,
-#     )
-
-#     left_rect = fitz.Rect(0, LABEL_H, pw, canvas_h)
-#     right_rect = fitz.Rect(pw + DIVIDER, LABEL_H, canvas_w, canvas_h)
-
-#     if has_a:
-#         new_page.show_pdf_page(left_rect, doc_a, page_num)
-
-#     if has_b:
-#         new_page.show_pdf_page(right_rect, doc_b, page_num)
-
-#     # -------------------------------------------------------------------------
-#     # Highlight employee changes
-#     # -------------------------------------------------------------------------
-
-#     all_keys = set(a_records) | set(b_records)
-
-#     for key in all_keys:
-
-#         rec_a = a_records.get(key)
-#         rec_b = b_records.get(key)
-
-#         # REMOVED
-#         if rec_a and not rec_b:
-#             if rec_a.page_num == page_num:
-
-#                 rect = fitz.Rect(
-#                     rec_a.rect.x0,
-#                     rec_a.rect.y0 + LABEL_H,
-#                     rec_a.rect.x1,
-#                     rec_a.rect.y1 + LABEL_H,
-#                 )
-
-#                 _draw_highlight(
-#                     new_page,
-#                     rect,
-#                     (1.0, 0.2, 0.2),
-#                 )
-
-#         # ADDED
-#         elif rec_b and not rec_a:
-#             if rec_b.page_num == page_num:
-
-#                 rect = fitz.Rect(
-#                     rec_b.rect.x0 + pw + DIVIDER,
-#                     rec_b.rect.y0 + LABEL_H,
-#                     rec_b.rect.x1 + pw + DIVIDER,
-#                     rec_b.rect.y1 + LABEL_H,
-#                 )
-
-#                 _draw_highlight(
-#                     new_page,
-#                     rect,
-#                     (0.2, 0.85, 0.2),
-#                 )
-
-#         # CHANGED
-#         elif rec_a and rec_b:
-#             if _record_changed(rec_a, rec_b):
-
-#                 if rec_a.page_num == page_num:
-
-#                     rect = fitz.Rect(
-#                         rec_a.rect.x0,
-#                         rec_a.rect.y0 + LABEL_H,
-#                         rec_a.rect.x1,
-#                         rec_a.rect.y1 + LABEL_H,
-#                     )
-
-#                     _draw_highlight(
-#                         new_page,
-#                         rect,
-#                         (1.0, 0.9, 0.2),
-#                     )
-
-#                 if rec_b.page_num == page_num:
-
-#                     rect = fitz.Rect(
-#                         rec_b.rect.x0 + pw + DIVIDER,
-#                         rec_b.rect.y0 + LABEL_H,
-#                         rec_b.rect.x1 + pw + DIVIDER,
-#                         rec_b.rect.y1 + LABEL_H,
-#                     )
-
-#                     _draw_highlight(
-#                         new_page,
-#                         rect,
-#                         (1.0, 0.9, 0.2),
-#                     )
-
-
-# # =============================================================================
-# # SUMMARY PAGE
-# # =============================================================================
-
-# def _build_summary_page(
-#     out_doc: fitz.Document,
-#     previous_label: str,
-#     current_label: str,
-#     project_name: str,
-#     report_type: str,
-#     a_records: Dict[str, EmployeeRecord],
-#     b_records: Dict[str, EmployeeRecord],
-# ):
-#     added = 0
-#     removed = 0
-#     changed = 0
-#     unchanged = 0
-
-#     all_keys = set(a_records) | set(b_records)
-
-#     for key in all_keys:
-
-#         rec_a = a_records.get(key)
-#         rec_b = b_records.get(key)
-
-#         if rec_a and not rec_b:
-#             removed += 1
-
-#         elif rec_b and not rec_a:
-#             added += 1
-
-#         elif rec_a and rec_b:
-#             if _record_changed(rec_a, rec_b):
-#                 changed += 1
-#             else:
-#                 unchanged += 1
-
-#     pg = out_doc.new_page(width=595, height=842)
-
-#     pg.draw_rect(
-#         fitz.Rect(0, 0, 595, 60),
-#         color=None,
-#         fill=(0.1, 0.1, 0.1),
-#     )
-
-#     pg.insert_text(
-#         (24, 38),
-#         "STRUCTURED PDF COMPARISON",
-#         fontsize=16,
-#         color=(1, 1, 1),
-#     )
-
-#     y = 100
-
-#     lines = [
-#         f"Project: {project_name}",
-#         f"Report type: {report_type}",
-#         "",
-#         f"Truth file   : {previous_label}",
-#         f"Compare file : {current_label}",
-#         "",
-#         f"Employees added      : {added}",
-#         f"Employees removed    : {removed}",
-#         f"Employees changed    : {changed}",
-#         f"Employees unchanged  : {unchanged}",
-#         "",
-#         "Legend:",
-#         "RED    = removed employee",
-#         "GREEN  = added employee",
-#         "YELLOW = changed employee",
-#     ]
-
-#     for line in lines:
-#         pg.insert_text(
-#             (24, y),
-#             line,
-#             fontsize=11,
-#             color=(0.15, 0.15, 0.15),
-#         )
-#         y += 22
-
-
-# # =============================================================================
-# # PUBLIC PDF API
-# # =============================================================================
-
-# def compare_pdfs(
-#     truth_pdf_bytes: bytes,
-#     compare_pdf_bytes: bytes,
-#     project_name: str = "Project",
-#     report_type: str = "Report",
-#     truth_label: str = "Truth",
-#     compare_label: str = "Compare",
-# ) -> bytes:
-#     """
-#     Structured payroll PDF comparison.
-
-#     Uses employee-level matching instead of raw word diffs.
-#     """
-
-#     doc_a = fitz.open(stream=truth_pdf_bytes, filetype="pdf")
-#     doc_b = fitz.open(stream=compare_pdf_bytes, filetype="pdf")
-
-#     out_doc = fitz.open()
-
-#     try:
-
-#         a_records = _extract_employee_records(doc_a)
-#         b_records = _extract_employee_records(doc_b)
-
-#         _build_summary_page(
-#             out_doc,
-#             truth_label,
-#             compare_label,
-#             project_name,
-#             report_type,
-#             a_records,
-#             b_records,
-#         )
-
-#         max_pages = max(len(doc_a), len(doc_b))
-
-#         for page_num in range(max_pages):
-#             _build_combined_page(
-#                 out_doc,
-#                 doc_a,
-#                 doc_b,
-#                 page_num,
-#                 max_pages,
-#                 a_records,
-#                 b_records,
-#             )
-
-#         buf = io.BytesIO()
-
-#         out_doc.save(buf)
-
-#         return buf.getvalue()
-
-#     finally:
-#         out_doc.close()
-#         doc_a.close()
-#         doc_b.close()
-
-
-# # =============================================================================
-# # CSV COMPARISON
-# # =============================================================================
-
-# def compare_csvs(
-#     truth_csv_bytes: bytes,
-#     compare_csv_bytes: bytes,
-#     truth_label: str = "Truth",
-#     compare_label: str = "Compare",
-# ) -> bytes:
-
-#     try:
-#         import pandas as pd
-#         from openpyxl import Workbook
-#         from openpyxl.styles import PatternFill, Font, Alignment
-
-#     except ImportError as exc:
-#         raise ImportError(
-#             f"Missing dependency for CSV comparison: {exc}. "
-#             "Run: pip install pandas openpyxl"
-#         ) from exc
-
-#     RED_FILL = PatternFill(
-#         start_color="FFC7CE",
-#         end_color="FFC7CE",
-#         fill_type="solid",
-#     )
-
-#     GREEN_FILL = PatternFill(
-#         start_color="C6EFCE",
-#         end_color="C6EFCE",
-#         fill_type="solid",
-#     )
-
-#     YELLOW_FILL = PatternFill(
-#         start_color="FFEB9C",
-#         end_color="FFEB9C",
-#         fill_type="solid",
-#     )
-
-#     df_a = pd.read_csv(
-#         io.BytesIO(truth_csv_bytes),
-#         dtype=str,
-#     ).fillna("")
-
-#     df_b = pd.read_csv(
-#         io.BytesIO(compare_csv_bytes),
-#         dtype=str,
-#     ).fillna("")
-
-#     df_a["_emp_key"] = (
-#         df_a["first_name"].str.strip()
-#         + "|"
-#         + df_a["last_name"].str.strip()
-#         + "|"
-#         + df_a["class_code"].str.strip()
-#     )
-
-#     df_b["_emp_key"] = (
-#         df_b["first_name"].str.strip()
-#         + "|"
-#         + df_b["last_name"].str.strip()
-#         + "|"
-#         + df_b["class_code"].str.strip()
-#     )
-
-#     a_map = df_a.set_index("_emp_key").to_dict(orient="index")
-#     b_map = df_b.set_index("_emp_key").to_dict(orient="index")
-
-#     columns = [c for c in df_a.columns if c != "_emp_key"]
-
-#     wb = Workbook()
-#     ws = wb.active
-#     ws.title = "CSV Comparison"
-
-#     headers = ["Employee", "Status"]
-
-#     for col in columns:
-#         headers.append(f"{truth_label} {col}")
-#         headers.append(f"{compare_label} {col}")
-
-#     ws.append(headers)
-
-#     for cell in ws[1]:
-#         cell.font = Font(bold=True)
-#         cell.alignment = Alignment(wrap_text=True)
-
-#     all_keys = sorted(set(a_map) | set(b_map))
-
-#     for key in all_keys:
-
-#         row_a = a_map.get(key, {})
-#         row_b = b_map.get(key, {})
-
-#         base_row = [key]
-
-#         # REMOVED
-#         if row_a and not row_b:
-
-#             base_row.append("REMOVED")
-
-#             for col in columns:
-#                 base_row.extend([row_a.get(col, ""), ""])
-
-#             ws.append(base_row)
-
-#             for col_idx in range(3, len(headers) + 1):
-#                 ws.cell(ws.max_row, col_idx).fill = RED_FILL
-
-#             continue
-
-#         # ADDED
-#         if row_b and not row_a:
-
-#             base_row.append("ADDED")
-
-#             for col in columns:
-#                 base_row.extend(["", row_b.get(col, "")])
-
-#             ws.append(base_row)
-
-#             for col_idx in range(3, len(headers) + 1):
-#                 ws.cell(ws.max_row, col_idx).fill = GREEN_FILL
-
-#             continue
-
-#         # CHANGED
-#         base_row.append("")
-
-#         data_cells = []
-#         changed_flags = []
-
-#         for col in columns:
-
-#             val_a = row_a.get(col, "")
-#             val_b = row_b.get(col, "")
-
-#             data_cells.extend([val_a, val_b])
-
-#             changed_flags.append(val_a != val_b)
-
-#         ws.append(base_row + data_cells)
-
-#         excel_row = ws.max_row
-
-#         col_pointer = 3
-
-#         for changed in changed_flags:
-
-#             if changed:
-#                 ws.cell(excel_row, col_pointer).fill = YELLOW_FILL
-#                 ws.cell(excel_row, col_pointer + 1).fill = YELLOW_FILL
-
-#             col_pointer += 2
-
-#     for col in ws.columns:
-#         max_len = max(
-#             (len(str(cell.value)) for cell in col if cell.value),
-#             default=0,
-#         )
-
-#         ws.column_dimensions[col[0].column_letter].width = min(
-#             max_len + 2,
-#             40,
-#         )
-
-#     buf = io.BytesIO()
-
-#     wb.save(buf)
-
-#     return buf.getvalue()
