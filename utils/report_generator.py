@@ -6,6 +6,7 @@ Extracts pass/fail status from diff files and generates an HTML report.
 from __future__ import annotations
 
 import io
+import json
 import re
 from collections import defaultdict
 from datetime import datetime
@@ -110,17 +111,26 @@ def extract_pdf_status(pdf_bytes: bytes) -> dict:
 
 # ── CSV/Excel Pass/Fail Extraction ────────────────────────────────────────────
 
+_COLUMN_MISMATCH_META_SEP = "||META||"
+
+
 def extract_excel_status(excel_bytes: bytes) -> dict:
     """
     Extract comparison status from an Excel diff file.
-    
-    Checks all sheets for "CHANGED" status in the Status column.
-    
+
+    Checks all sheets for "CHANGED" status in the Status column, and for a
+    column-mismatch banner row (written by utils.comparison when the truth
+    and compare files had a different column count or order) at the top of
+    the sheet.
+
     Returns:
         {
             "status": "PASS" | "FAIL",
             "sheets_checked": int,
             "rows_changed": int,
+            "column_count_mismatch": bool,
+            "column_order_mismatch": bool,
+            "column_mismatches": list[dict],
             "details": str
         }
     """
@@ -134,12 +144,45 @@ def extract_excel_status(excel_bytes: bytes) -> dict:
         total_removed = 0
         sheets_with_status = 0
         changed_details = []
-        
+        column_mismatch_details = []
+        column_mismatches = []
+        any_column_count_mismatch = False
+        any_column_order_mismatch = False
+
         for sheet_name in xls.sheet_names:
-            df = pd.read_excel(io.BytesIO(excel_bytes), sheet_name=sheet_name, dtype=str)
+            preview = pd.read_excel(io.BytesIO(excel_bytes), sheet_name=sheet_name, header=None, nrows=1)
+            first_cell = str(preview.iloc[0, 0]) if not preview.empty else ""
+
+            header_row = 0
+            sheet_mismatch = None
+            if _COLUMN_MISMATCH_META_SEP in first_cell:
+                header_row = 1
+                try:
+                    meta_json = first_cell.split(_COLUMN_MISMATCH_META_SEP, 1)[1]
+                    sheet_mismatch = json.loads(meta_json)
+                except (ValueError, IndexError) as parse_exc:
+                    print(f"[STATUS][EXCEL] Sheet '{sheet_name}' column-mismatch banner failed to parse: {parse_exc}")
+                    sheet_mismatch = {"column_count_mismatch": True, "column_order_mismatch": True, "parse_error": True}
+
+            if sheet_mismatch:
+                column_mismatches.append({"sheet": sheet_name, **sheet_mismatch})
+                if sheet_mismatch.get("column_count_mismatch"):
+                    any_column_count_mismatch = True
+                if sheet_mismatch.get("column_order_mismatch"):
+                    any_column_order_mismatch = True
+                column_mismatch_details.append(
+                    f"{sheet_name}: COLUMN MISMATCH (truth={len(sheet_mismatch.get('truth_columns', []))} cols, "
+                    f"compare={len(sheet_mismatch.get('compare_columns', []))} cols, "
+                    f"missing_in_compare={sheet_mismatch.get('missing_in_compare', [])}, "
+                    f"extra_in_compare={sheet_mismatch.get('extra_in_compare', [])}, "
+                    f"order_mismatch={sheet_mismatch.get('column_order_mismatch')})"
+                )
+                print(f"[STATUS][EXCEL] Sheet '{sheet_name}' column mismatch: {sheet_mismatch}")
+
+            df = pd.read_excel(io.BytesIO(excel_bytes), sheet_name=sheet_name, dtype=str, header=header_row)
             sheets_checked += 1
             print(f"[STATUS][EXCEL] Sheet '{sheet_name}': rows={len(df)}, columns={list(df.columns)}")
-            
+
             # Check if Status column exists
             if "Status" in df.columns:
                 sheets_with_status += 1
@@ -164,20 +207,22 @@ def extract_excel_status(excel_bytes: bytes) -> dict:
 
         if sheets_checked > 0 and sheets_with_status == 0:
             raise ValueError("No Status column found in any sheet")
-        
-        is_pass = total_different == 0
+
+        is_pass = total_different == 0 and not any_column_count_mismatch and not any_column_order_mismatch
         status = "PASS" if is_pass else "FAIL"
-        
-        if changed_details:
-            details = ", ".join(changed_details)
+
+        detail_parts = changed_details + column_mismatch_details
+        if detail_parts:
+            details = ", ".join(detail_parts)
         else:
             details = f"No changes detected across {sheets_checked} sheet(s)"
         print(
             "[STATUS][EXCEL] Result: "
             f"status={status}, sheets={sheets_checked}, changed={total_changed}, "
-            f"added={total_added}, removed={total_removed}, total_different={total_different}"
+            f"added={total_added}, removed={total_removed}, total_different={total_different}, "
+            f"column_count_mismatch={any_column_count_mismatch}, column_order_mismatch={any_column_order_mismatch}"
         )
-        
+
         return {
             "status": status,
             "sheets_checked": sheets_checked,
@@ -185,6 +230,9 @@ def extract_excel_status(excel_bytes: bytes) -> dict:
             "rows_added": total_added,
             "rows_removed": total_removed,
             "rows_different": total_different,
+            "column_count_mismatch": any_column_count_mismatch,
+            "column_order_mismatch": any_column_order_mismatch,
+            "column_mismatches": column_mismatches,
             "details": details
         }
     except Exception as e:
@@ -196,6 +244,9 @@ def extract_excel_status(excel_bytes: bytes) -> dict:
             "rows_added": 0,
             "rows_removed": 0,
             "rows_different": 0,
+            "column_count_mismatch": False,
+            "column_order_mismatch": False,
+            "column_mismatches": [],
             "details": f"Error reading Excel: {str(e)}"
         }
 
