@@ -7,15 +7,47 @@ from __future__ import annotations
 import io
 import json
 import os
-from typing import Any
+import socket
+import time
+from typing import Any, Callable, TypeVar
 
 from google.auth.transport.requests import Request
 from google.oauth2 import credentials as oauth2_credentials
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload, MediaIoBaseUpload
 
 SCOPES = ["https://www.googleapis.com/auth/drive"]
+
+_T = TypeVar("_T")
+
+# Drive API calls fail transiently (server-side 5xx, read timeouts, dropped
+# connections) often enough in practice — see failure logs from 2026-10-15/16
+# ("HttpError 500 ... Internal Error" on list/upload, "The read operation
+# timed out" on download) — that every call needs a retry with backoff rather
+# than failing the whole comparison/report job on the first hiccup.
+_RETRYABLE_HTTP_STATUSES = {500, 502, 503, 504}
+_RETRYABLE_EXCEPTIONS = (HttpError, socket.timeout, TimeoutError, ConnectionError)
+
+
+def _is_retryable(exc: Exception) -> bool:
+    if isinstance(exc, HttpError):
+        return exc.resp.status in _RETRYABLE_HTTP_STATUSES
+    return isinstance(exc, (socket.timeout, TimeoutError, ConnectionError))
+
+
+def _with_retry(call: Callable[[], _T], description: str, max_retries: int = 4, initial_delay: float = 2.0) -> _T:
+    delay = initial_delay
+    for attempt in range(1, max_retries + 1):
+        try:
+            return call()
+        except _RETRYABLE_EXCEPTIONS as exc:
+            if attempt == max_retries or not _is_retryable(exc):
+                raise
+            print(f"[RETRY] {description} failed (attempt {attempt}/{max_retries}): {exc} — retrying in {delay:.0f}s")
+            time.sleep(delay)
+            delay *= 2
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 CREDENTIALS_DIR = os.path.join(BASE_DIR, "credentials")
 OAUTH_CLIENT_PATH = os.path.join(CREDENTIALS_DIR, "gdrive_credentials.json")
@@ -98,8 +130,8 @@ def _list_files(service: Any, query: str) -> list[dict[str, str]]:
     files: list[dict[str, str]] = []
     page_token = None
     while True:
-        response = (
-            service.files()
+        response = _with_retry(
+            lambda: service.files()
             .list(
                 q=query,
                 spaces="drive",
@@ -107,7 +139,8 @@ def _list_files(service: Any, query: str) -> list[dict[str, str]]:
                 pageToken=page_token,
                 pageSize=1000,
             )
-            .execute()
+            .execute(),
+            description="files.list",
         )
         files.extend(response.get("files", []))
         page_token = response.get("nextPageToken")
@@ -150,7 +183,10 @@ def get_or_create_folder(service: Any, name: str, parent_id: str) -> str:
         "parents": [parent_id],
         "mimeType": "application/vnd.google-apps.folder",
     }
-    created = service.files().create(body=metadata, fields="id").execute()
+    created = _with_retry(
+        lambda: service.files().create(body=metadata, fields="id").execute(),
+        description="files.create (folder)",
+    )
     return created["id"]
 
 
@@ -189,13 +225,16 @@ def get_periods_list(service: Any, company_name: str, report_type: str) -> list[
 
 
 def download_file(service: Any, file_id: str) -> bytes:
-    request = service.files().get_media(fileId=file_id)
-    buffer = io.BytesIO()
-    downloader = MediaIoBaseDownload(buffer, request)
-    done = False
-    while not done:
-        _, done = downloader.next_chunk()
-    return buffer.getvalue()
+    def _attempt() -> bytes:
+        request = service.files().get_media(fileId=file_id)
+        buffer = io.BytesIO()
+        downloader = MediaIoBaseDownload(buffer, request)
+        done = False
+        while not done:
+            _, done = downloader.next_chunk()
+        return buffer.getvalue()
+
+    return _with_retry(_attempt, description=f"files.get_media ({file_id})")
 
 
 def upload_or_update_file(
@@ -211,12 +250,28 @@ def upload_or_update_file(
         f"and '{parent_folder_id}' in parents"
     )
     existing = _list_files(service, query)
-    media = MediaIoBaseUpload(io.BytesIO(file_bytes), mimetype=mime_type, resumable=False)
     if existing:
         file_id = existing[0]["id"]
-        service.files().update(fileId=file_id, media_body=media).execute()
+        _with_retry(
+            lambda: service.files()
+            .update(
+                fileId=file_id,
+                media_body=MediaIoBaseUpload(io.BytesIO(file_bytes), mimetype=mime_type, resumable=False),
+            )
+            .execute(),
+            description=f"files.update ({name})",
+        )
         return file_id
 
     metadata = {"name": name, "parents": [parent_folder_id]}
-    created = service.files().create(body=metadata, media_body=media, fields="id").execute()
+    created = _with_retry(
+        lambda: service.files()
+        .create(
+            body=metadata,
+            media_body=MediaIoBaseUpload(io.BytesIO(file_bytes), mimetype=mime_type, resumable=False),
+            fields="id",
+        )
+        .execute(),
+        description=f"files.create ({name})",
+    )
     return created["id"]
