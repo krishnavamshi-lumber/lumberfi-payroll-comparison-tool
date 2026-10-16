@@ -310,7 +310,7 @@ def _ensure_worker_compensation_columns(page) -> None:
 
 
 def ensure_download_button(page):
-    button = page.locator('button[data-testid="reports-download-button"]')
+    button = page.locator('button[data-testid="payroll-prevailing-wage-export"]')
     if button.count() > 0:
         return button
 
@@ -323,6 +323,30 @@ def ensure_download_button(page):
         return button
 
     raise RuntimeError("❌ No Download Report or Export button found.")
+
+
+def set_wh347_format(page, format_value: str) -> bool:
+    """Select the Prevailing Wage "WH-347 format:" toggle: '2024' = Federal
+    report, '2025' = WH-347 report (confirmed with Krishna 2026-10-16). This
+    toggle replaced the old "Revert to Old Format"/"Switch to New Format"
+    buttons. Returns True if the toggle exists and was set (or already set);
+    False if the toggle isn't on the page at all, so callers can fall back
+    to the old button-based flow for any company still on the old UI.
+    """
+    toggle_group = page.locator('div[data-testid="reports-pw-format-toggle"]')
+    if toggle_group.count() == 0:
+        return False
+
+    button = toggle_group.locator(f'button[value="{format_value}"]')
+    if button.count() == 0:
+        return False
+
+    if button.get_attribute("aria-pressed") == "true":
+        return True
+
+    button.click()
+    page.wait_for_timeout(3000)
+    return True
 
 
 def expect_download_with_retries(page, click_download, timeout: int = 240000, retries: int = 3, label: str = "download"):
@@ -399,7 +423,12 @@ def download_pdf_report(service, page, folder_id: str, filename: str) -> bool:
         expect(download_btn).to_be_enabled(timeout=120000)
         download_btn.click()
 
-        pdf_option = page.locator('//li[contains(normalize-space(.), "PDF")]')
+        # The Export menu now also has a "Summary" item, and the old loose
+        # substring match ('contains(., "PDF")') matches both, throwing a
+        # Playwright strict-mode violation. Match the menu item by its exact
+        # accessible name instead, scoped to a role so it can't pick up
+        # unrelated page text either.
+        pdf_option = page.get_by_role("menuitem", name="PDF", exact=True)
         expect(pdf_option).to_be_visible(timeout=120000)
         with page.expect_download(timeout=120000) as dl:
             pdf_option.click()
@@ -413,6 +442,15 @@ def download_pdf_report(service, page, folder_id: str, filename: str) -> bool:
         log(f"[WARN] Failed to download PDF report '{filename}': {exc}")
         if _failure_logger:
             _failure_logger.log_failure(filename, reason=str(exc)[:300])
+        # The Export dropdown may still be open after a failed match/click,
+        # leaving an invisible MUI backdrop over the whole page that blocks
+        # every subsequent click (state tab, next project, next company).
+        # Dismiss it so one failure doesn't cascade through the rest of the run.
+        try:
+            page.keyboard.press("Escape")
+            page.click("body", position={"x": 100, "y": 100})
+        except Exception:
+            pass
         return False
 
 
@@ -428,12 +466,32 @@ def download_csv_report(service, page, folder_id: str, filename: str, menu_selec
         # element detached before the click landed.  Both paths now open the
         # dropdown explicitly, and the button click is inside expect_download so
         # the event is never missed.
-        selector = '//li[contains(normalize-space(.), "LCPtracker") or contains(normalize-space(.), "CSV") or contains(normalize-space(.), "IDOL")]'
+        #
+        # LCP export format priority: LCPtracker > EMARS > IDOL > plain CSV
+        # (confirmed with Krishna 2026-10-16). Some projects offer more than
+        # one of these at once, and matching by raw text content (the old
+        # approach) picks up the decorative file-type icon's embedded "CSV"
+        # text on every option — since that icon's <svg> is aria-hidden,
+        # Playwright's role-based accessible name correctly ignores it, so
+        # exact-name matching avoids the strict-mode collision (e.g.
+        # LCPtracker + EMARS both present) that substring matching hit.
+        FORMAT_PRIORITY = ["LCPtracker", "EMARS", "IDOL", "CSV"]
 
         with page.expect_download(timeout=120000) as dl:
             download_btn.click()
-            option = page.locator(selector)
-            expect(option).to_be_visible(timeout=120000)
+
+            # Wait for the dropdown to actually render before checking which
+            # format options it offers.
+            expect(page.locator('li[role="menuitem"]').first).to_be_visible(timeout=120000)
+
+            option = None
+            for fmt in FORMAT_PRIORITY:
+                candidate = page.get_by_role("menuitem", name=fmt, exact=True)
+                if candidate.count() > 0:
+                    option = candidate
+                    break
+            if option is None:
+                raise RuntimeError("❌ No LCPtracker/EMARS/IDOL/CSV export option found in dropdown.")
             option.click()
 
         save_and_upload_download(service, dl.value, DOWNLOAD_DIR / filename, folder_id, filename, "text/csv")
@@ -443,6 +501,13 @@ def download_csv_report(service, page, folder_id: str, filename: str, menu_selec
         log(f"[WARN] Failed to download CSV report '{filename}': {exc}")
         if _failure_logger:
             _failure_logger.log_failure(filename, reason=str(exc)[:300])
+        # Same leftover-dropdown risk as download_pdf_report — dismiss it so
+        # this failure doesn't block every click for the rest of the run.
+        try:
+            page.keyboard.press("Escape")
+            page.click("body", position={"x": 100, "y": 100})
+        except Exception:
+            pass
         return False
 
 
@@ -930,15 +995,19 @@ def download_prevailing_wage_reports(service, page, company_name: str, projects:
             federal_tab.click()
             page.wait_for_timeout(15000)
             
-            try:
-                old_format = page.locator('//button[contains(normalize-space(.), "Revert to Old Format")]')
-                expect(old_format).to_be_visible(timeout=120000)
-                if old_format.count() > 0:
-                    old_format.click()
-                    page.wait_for_timeout(60000)
-            except Exception as exc:
-                log(f"[INFO] Revert to Old Format button not found, already in old format")
-            
+            # "2024 format" = Federal report (confirmed with Krishna 2026-10-16).
+            # Try the new toggle first; fall back to the old button for any
+            # company still showing the pre-rollout UI.
+            if not set_wh347_format(page, "2024"):
+                try:
+                    old_format = page.locator('//button[contains(normalize-space(.), "Revert to Old Format")]')
+                    expect(old_format).to_be_visible(timeout=120000)
+                    if old_format.count() > 0:
+                        old_format.click()
+                        page.wait_for_timeout(60000)
+                except Exception as exc:
+                    log(f"[INFO] Revert to Old Format button not found, already in old format")
+
             federal_name = safe_text(f"Prevailing_Wage_Report_Federal_{project}_{end_date}.pdf")
             if download_pdf_report(service, page, folder_id, federal_name):
                 log(f"[OK] Federal report saved: {federal_name}")
@@ -956,15 +1025,23 @@ def download_prevailing_wage_reports(service, page, company_name: str, projects:
             log(f"[WARN] Federal tab missing or failed for project '{project}': {exc}")
         
         try:
-            wh3_47_format = page.locator('//button[contains(normalize-space(.), "Switch to New Format")]')
-            if wh3_47_format.count() > 0:
-                wh3_47_format.click()
+            # "2025 format" = WH-347 report (confirmed with Krishna 2026-10-16).
+            # Try the new toggle first; fall back to the old button for any
+            # company still showing the pre-rollout UI.
+            switched = set_wh347_format(page, "2025")
+            if not switched:
+                wh3_47_format = page.locator('//button[contains(normalize-space(.), "Switch to New Format")]')
+                if wh3_47_format.count() > 0:
+                    wh3_47_format.click()
+                    switched = True
+
+            if switched:
                 page.wait_for_timeout(120000)
                 # Wait for PDF viewer to appear and load
                 # pdf_viewer = page.locator('pdf-viewer#viewer')
                 # expect(pdf_viewer).to_be_visible(timeout=120000)
                 # page.wait_for_timeout(3000)
-                
+
                 # ── CRITICAL: Validate button is ready in NEW format context ──
                 page.wait_for_timeout(3000)
                 download_btn = ensure_download_button(page)
@@ -973,11 +1050,11 @@ def download_prevailing_wage_reports(service, page, company_name: str, projects:
                 except Exception:
                     log(f"[WARN] Download button not ready after format switch, waiting extra...")
                     page.wait_for_timeout(5000)
-                
+
                 wh3_47_name = safe_text(f"Prevailing_Wage_Report_WH3_47_{project}_{end_date}.pdf")
                 if download_pdf_report(service, page, folder_id, wh3_47_name):
                     log(f"[OK] WH3-47 report saved: {wh3_47_name}")
-                
+
                 # ── CRITICAL: Wait after download before State tab click ──
                 page.wait_for_timeout(3000)
                 download_btn = ensure_download_button(page)
@@ -986,6 +1063,8 @@ def download_prevailing_wage_reports(service, page, company_name: str, projects:
                 except Exception:
                     log(f"[WARN] Download button did not re-enable after WH3-47 download")
                     page.wait_for_timeout(5000)
+            else:
+                log(f"[WARN] No WH-347 format toggle or 'Switch to New Format' button found for project '{project}' — skipping WH3-47 report")
         except Exception as exc:
             log(f"[WARN] WH3-47 format switch missing or failed for project '{project}': {exc}")
 
