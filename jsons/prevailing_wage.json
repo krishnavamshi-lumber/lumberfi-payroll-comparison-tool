@@ -802,5 +802,80 @@
                 ]
             }
         ]
+    },
+    {
+        "execute": true,
+        "company_name": "Stone Hill Contracting Co. ,Inc.",
+        "start_date": "2026-09-06",
+        "end_date": "2026-09-12",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "PVSC Decant Facility Rehab",
+                    "WM 2026 T&M WORK",
+                    "NJDSWC Filter Rehab Project"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Wichita Construction Group, Inc.",
+        "start_date": "2026-09-27",
+        "end_date": "2026-10-03",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "K-15 Barrier Wall",
+                    "SMT-ADM - Columbus, NE"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Wichita Construction Group, Inc.",
+        "start_date": "2026-10-04",
+        "end_date": "2026-10-10",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "SMT-ADM - Columbus, NE"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Jakes Electric, LLC",
+        "start_date": "2026-09-14",
+        "end_date": "2026-09-20",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "Lawler, IA HRSG Replacement",
+                    "Lawler, IA 1386 Conveyor"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "Stone Hill Contracting Co. ,Inc.",
+        "start_date": "2026-09-06",
+        "end_date": "2026-09-12",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "WM 2026 T&M WORK",
+                    "PVSC Decant Facility Rehab"
+                ]
+            }
+        ]
     }
 ]
