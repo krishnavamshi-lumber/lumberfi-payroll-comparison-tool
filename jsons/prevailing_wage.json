@@ -862,20 +862,5 @@
                 ]
             }
         ]
-    },
-    {
-        "execute": true,
-        "company_name": "Stone Hill Contracting Co. ,Inc.",
-        "start_date": "2026-09-06",
-        "end_date": "2026-09-12",
-        "reports": [
-            {
-                "prevailing_wage_report": true,
-                "projects": [
-                    "WM 2026 T&M WORK",
-                    "PVSC Decant Facility Rehab"
-                ]
-            }
-        ]
     }
 ]
