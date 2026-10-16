@@ -1677,7 +1677,7 @@ def download_worker_compensation_report(service, page, company_name: str, folder
         page.wait_for_function("button => !button.disabled", arg=download_button.element_handle(), timeout=120000)
         download_button.click()
 
-        excel_option = page.locator('//li[contains(normalize-space(.), "Excel")]')
+        excel_option = page.locator('//li[contains(normalize-space(.), "CSV")]')
         expect(excel_option).to_be_visible(timeout=120000)
         with page.expect_download(timeout=60000) as csv_dl:
             excel_option.click()
@@ -1804,7 +1804,7 @@ def download_payroll_journal_report(service, page, company_name: str, folder_id:
         page.wait_for_function("button => !button.disabled", arg=download_button.element_handle(), timeout=120000)
         download_button.click()
 
-        excel_option = page.locator('//li[contains(normalize-space(.), "Excel")]')
+        excel_option = page.locator('//li[contains(normalize-space(.), "CSV")]')
         expect(excel_option).to_be_visible(timeout=120000)
         filename = safe_text(f"Payroll_Journal_{end_date}.csv")
         with page.expect_download(timeout=60000) as csv_dl:
