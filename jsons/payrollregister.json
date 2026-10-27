@@ -84,32 +84,6 @@
     {
         "execute": true,
         "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
-        "start_date": "2026-05-11",
-        "end_date": "2026-05-17 (Off Cycle)",
-        "reports": [
-            {
-                "union_report": false,
-                "report_name": []
-            },
-            {
-                "prevailing_wage_report": false,
-                "projects": []
-            },
-            {
-                "payroll_register_report": true,
-                "pay_period_index": 3
-            },
-            {
-                "worker_compensation_report": false
-            },
-            {
-                "job_costing_report": false
-            }
-        ]
-    },
-    {
-        "execute": true,
-        "company_name": "Acoustic Ceiling & Partition of Ohio, Inc.",
         "start_date": "2026-05-04",
         "end_date": "2026-05-10 (Regular)",
         "reports": [
@@ -590,31 +564,6 @@
         "company_name": "Milestone Building Services",
         "start_date": "2026-04-20",
         "end_date": "2026-05-03 (Regular)",
-        "reports": [
-            {
-                "union_report": false,
-                "report_name": []
-            },
-            {
-                "prevailing_wage_report": false,
-                "projects": []
-            },
-            {
-                "payroll_register_report": true
-            },
-            {
-                "worker_compensation_report": false
-            },
-            {
-                "job_costing_report": false
-            }
-        ]
-    },
-    {
-        "execute": true,
-        "company_name": "MIINC",
-        "start_date": "2026-05-04",
-        "end_date": "2026-05-10 (Regular)",
         "reports": [
             {
                 "union_report": false,

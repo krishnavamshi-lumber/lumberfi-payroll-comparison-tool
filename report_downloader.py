@@ -92,39 +92,39 @@ DEFAULT_CONFIG_PATH = BASE_DIR / "garnishment_report.json"
 VIEW_TYPE_SELECTOR_COMPANIES: dict[str, set[str]] = {
     "union_report": {
         "Precision Mechanical",
-        "MIINC",
+        # "MIINC",
         "American Asphalt South",
         "Lynco Electric Co.",
         "Yard 1",
-        "Sievert Electric Service & Sales Company",
+        # "Sievert Electric Service & Sales Company",
         "Fire Protection Professionals",
         "Pro 1 Electric, Inc.",
         "Acoustic Ceiling & Partition of Ohio, Inc."
     },
     "401k_report": {
-        "MIINC",
+        # "MIINC",
         "Yard 1",
-        "Sievert Electric Service & Sales Company",
+        # "Sievert Electric Service & Sales Company",
         "Bryan Construction, Inc",
     },
     "worker_compensation_report": {
-        "MIINC",
+        # "MIINC",
         "American Asphalt South",
         "Guyer Brothers Inc.",
         "Evans Contracting Group, LLC",
     },
     "child_support_report": {
-        "MIINC",
+        # "MIINC",
     },
     "garnishment_report": {
-        "MIINC",
+        # "MIINC",
         "American Asphalt South",
     },
     "payroll_journal_report": {
         "Wagner Roofing Company",
     },
     "summary_of_wages_report": {
-        "MIINC",
+        # "MIINC",
     },
 }
 
@@ -235,10 +235,10 @@ def navigate_to_report(page, report_path: str) -> None:
     url = get_base_url(page).rstrip("/") + report_path
     page.goto(url, timeout=60000, wait_until="domcontentloaded")
     try:
-        page.wait_for_load_state("networkidle", timeout=15000)
+        page.wait_for_load_state("networkidle", timeout=90000)
     except Exception:
         log("[WARN] networkidle wait timed out; continuing after DOM content loaded")
-    page.wait_for_timeout(7000)
+    page.wait_for_timeout(20000)
     log(f"[OK] Navigated to report page: {url}")
 
 
@@ -420,7 +420,7 @@ def save_and_upload_download(
 def download_pdf_report(service, page, folder_id: str, filename: str) -> bool:
     try:
         download_btn = ensure_download_button(page)
-        expect(download_btn).to_be_enabled(timeout=120000)
+        expect(download_btn).to_be_enabled(timeout=300000)
         download_btn.click()
 
         # The Export menu now also has a "Summary" item, and the old loose
@@ -457,7 +457,7 @@ def download_pdf_report(service, page, folder_id: str, filename: str) -> bool:
 def download_csv_report(service, page, folder_id: str, filename: str, menu_selector: str | None = None) -> bool:
     try:
         download_btn = ensure_download_button(page)
-        expect(download_btn).to_be_enabled(timeout=120000)
+        expect(download_btn).to_be_enabled(timeout=300000)
 
         # Resolve which dropdown item to click.
         # Previously the else-branch skipped clicking the download button, which
@@ -911,10 +911,10 @@ def select_payroll_register_date_range(page, formatted_range: str) -> bool:
 
 def download_payroll_register_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str, pay_period_index: int = 0) -> None:
     navigate_to_report(page, "/reportsv2/payroll/payroll_register")
-    page.wait_for_timeout(5000)
+    page.wait_for_timeout(15000)
 
-    if not select_payroll_register_date_range(page, PAYROLL_REGISTER_DATE_RANGE):
-        log("[WARN] Failed to select payroll register date range, continuing with pay period selection anyway...")
+    # if not select_payroll_register_date_range(page, PAYROLL_REGISTER_DATE_RANGE):
+    #     log("[WARN] Failed to select payroll register date range, continuing with pay period selection anyway...")
 
     if not select_pay_period_for_payroll_register(page, start_date, end_date, pay_period_index):
         log("[INFO] Skipping payroll register report section because pay period was not found.")
@@ -947,7 +947,7 @@ def download_payroll_register_report(service, page, company_name: str, folder_id
         excel_option = page.locator('//li[contains(normalize-space(.), "Excel")]')
         expect(excel_option).to_be_visible(timeout=120000)
         with page.expect_download(timeout=60000) as excel_dl:
-            excel_option.click()
+            excel_option.click(timeout=120000)
         excel_filename = safe_text(f"Payroll_Register_{end_date}.xlsx")
         save_and_upload_download(service, excel_dl.value, DOWNLOAD_DIR / excel_filename, folder_id, excel_filename, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         log(f"[OK] Payroll register Excel saved: {excel_filename}")
@@ -959,7 +959,7 @@ def download_payroll_register_report(service, page, company_name: str, folder_id
 
 def download_prevailing_wage_reports(service, page, company_name: str, projects: list[str], folder_id: str, start_date: str, end_date: str) -> None:
     navigate_to_report(page, "/reportsv2/payroll/prevailing_wage")
-    page.wait_for_timeout(5000)
+    page.wait_for_timeout(15000)
 
     if not select_prevailing_wage_week(page, start_date, end_date):
         log("[INFO] Skipping prevailing wage report section because the correct week was not found.")
@@ -1105,7 +1105,7 @@ def download_prevailing_wage_reports(service, page, company_name: str, projects:
 
 def download_prevailing_wage_summary_reports(service, page, company_name: str, projects: list[str], folder_id: str, start_date: str, end_date: str) -> None:
     navigate_to_report(page, "/reportsv2/payroll/prevailing_wage")
-    page.wait_for_timeout(5000)
+    page.wait_for_timeout(15000)
 
     if not select_prevailing_wage_week(page, start_date, end_date):
         log("[INFO] Skipping prevailing wage report section because the correct week was not found.")
@@ -1161,7 +1161,7 @@ def download_prevailing_wage_summary_reports(service, page, company_name: str, p
 
 def download_summary_of_wages_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str) -> None:
     navigate_to_report(page, "/reportsv2/payroll/census_report")
-    page.wait_for_timeout(5000)
+    page.wait_for_timeout(15000)
 
     if uses_view_type_selector(company_name, "summary_of_wages_report"):
         period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date)
@@ -1231,7 +1231,7 @@ def download_summary_of_wages_report(service, page, company_name: str, folder_id
 
 def download_child_support_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str, pay_period_index: int = 0) -> None:
     navigate_to_report(page, "/reportsv2/payroll/child_support_payments")
-    page.wait_for_timeout(5000)
+    page.wait_for_timeout(15000)
 
     if uses_view_type_selector(company_name, "child_support_report"):
         period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date, pay_period_index=pay_period_index)
@@ -1257,7 +1257,7 @@ def download_child_support_report(service, page, company_name: str, folder_id: s
         page.wait_for_function("button => !button.disabled", arg=download_button.element_handle(), timeout=120000)
         download_button.click()
 
-        excel_option = page.locator('//li[contains(normalize-space(.), "Excel")]')
+        excel_option = page.locator('//li[contains(normalize-space(.), "CSV")]')
         expect(excel_option).to_be_visible(timeout=120000)
         with page.expect_download(timeout=60000) as csv_dl:
             excel_option.click()
@@ -1275,7 +1275,7 @@ def download_child_support_report(service, page, company_name: str, folder_id: s
 
 def download_garnishment_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str, pay_period_index: int = 0) -> None:
     navigate_to_report(page, "/reportsv2/payroll/garnishment_report")
-    page.wait_for_timeout(5000)
+    page.wait_for_timeout(15000)
 
     if uses_view_type_selector(company_name, "garnishment_report"):
         period_selected = select_pay_period_via_view_type_calendar(page, start_date, end_date, pay_period_index=pay_period_index)
@@ -1302,7 +1302,7 @@ def download_garnishment_report(service, page, company_name: str, folder_id: str
         page.wait_for_function("button => !button.disabled", arg=download_button.element_handle(), timeout=120000)
         download_button.click()
 
-        excel_option = page.locator('//li[contains(normalize-space(.), "Excel")]')
+        excel_option = page.locator('//li[contains(normalize-space(.), "CSV")]')
         expect(excel_option).to_be_visible(timeout=120000)
         with page.expect_download(timeout=60000) as dl:
             excel_option.click()
@@ -1524,7 +1524,7 @@ def select_pay_period_via_view_type_calendar(page, start_date: str, end_date: st
 
 def download_union_reports(service, page, company_name: str, report_names: list[str], folder_id: str, start_date: str, end_date: str, custom_report: bool = False, pay_periods: list[dict] | None = None) -> None:
     navigate_to_report(page, "/reportsv2/payroll/union_report")
-    page.wait_for_timeout(5000)
+    page.wait_for_timeout(15000)
 
     use_multi_period = bool(pay_periods)
     # Determine which end_date to use for the calendar month/year picker
@@ -1806,7 +1806,7 @@ def download_job_costing_report(service, page, company_name: str, folder_id: str
 
 def download_apprentice_ratio_reports(service, page, company_name: str, folder_id: str, start_date: str, end_date: str) -> None:
     navigate_to_report(page, "/reportsv2/payroll/apprentice_ratio")
-    page.wait_for_timeout(10000)
+    page.wait_for_timeout(15000)
 
     start_dt = datetime.strptime(start_date, "%Y-%m-%d")
     end_dt = datetime.strptime(end_date, "%Y-%m-%d")
@@ -1858,6 +1858,7 @@ def download_apprentice_ratio_reports(service, page, company_name: str, folder_i
 
 def download_payroll_journal_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str) -> None:
     navigate_to_report(page, "/reportsv2/payroll/payroll_journal_report")
+    page.wait_for_timeout(15000)
     page.click("body", position={"x": 100, "y": 100})
 
     if uses_view_type_selector(company_name, "payroll_journal_report"):
@@ -1943,6 +1944,7 @@ def select_pay_period_for_401k(page, start_date: str, end_date: str) -> bool:
 
 def download_401k_report(service, page, company_name: str, folder_id: str, start_date: str, end_date: str) -> None:
     navigate_to_report(page, "/reportsv2/payroll/401k_report")
+    page.wait_for_timeout(15000)
     page.click("body", position={"x": 100, "y": 100})
 
     if uses_view_type_selector(company_name, "401k_report"):
@@ -1966,7 +1968,7 @@ def download_401k_report(service, page, company_name: str, folder_id: str, start
         page.wait_for_function("button => !button.disabled", arg=download_button.element_handle(), timeout=120000)
         download_button.click()
 
-        excel_option = page.locator('//li[contains(normalize-space(.), "Excel")]')
+        excel_option = page.locator('//li[contains(normalize-space(.), "CSV")]')
         expect(excel_option).to_be_visible(timeout=120000)
         filename = safe_text(f"401K_Report_{end_date}.csv")
         with page.expect_download(timeout=60000) as csv_dl:

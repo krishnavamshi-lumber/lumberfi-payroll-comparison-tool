@@ -862,5 +862,33 @@
                 ]
             }
         ]
+    },
+    {
+        "execute": true,
+        "company_name": "D&G Mechanical Insulation, Inc.",
+        "start_date": "2026-10-05",
+        "end_date": "2026-10-11",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "HP-Mary's Place INS"
+                ]
+            }
+        ]
+    },
+    {
+        "execute": true,
+        "company_name": "D&G Mechanical Insulation, Inc.",
+        "start_date": "2026-09-28",
+        "end_date": "2026-10-04",
+        "reports": [
+            {
+                "prevailing_wage_report": true,
+                "projects": [
+                    "ABSHER-JBLM FY23"
+                ]
+            }
+        ]
     }
 ]
